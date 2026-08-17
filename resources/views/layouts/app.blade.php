@@ -29,17 +29,22 @@
                 </div>
             </a>
 
-            @if(isset($activeTable))
-                <div class="flex items-center gap-2 bg-[#181614] border border-[#C5A880]/30 px-3.5 py-1.5 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#C5A880] animate-pulse"></span>
-                    <span class="text-xs text-[#E8D9C5] tracking-wider">{{ $activeTable->table_number }}</span>
-                    <span class="text-[10px] text-[#A89C8F]">({{ $activeTable->section }})</span>
-                </div>
-            @else
-                <div class="text-right">
-                    <span class="text-[10px] tracking-[0.2em] uppercase text-[#C5A880] font-medium px-3 py-1 rounded-full bg-[#181614] border border-[#C5A880]/20">VIP Night Menu</span>
-                </div>
-            @endif
+            <div class="flex items-center gap-2.5">
+                <a href="{{ route('reception.index') }}" class="text-[10px] tracking-[0.15em] uppercase text-[#A89C8F] hover:text-[#E8D9C5] px-2.5 py-1 rounded-full bg-[#181614] border border-[#C5A880]/20 transition-colors">
+                    Resepsiyon
+                </a>
+
+                @if(isset($activeTable))
+                    <div class="flex items-center gap-1.5 bg-[#181614] border border-[#C5A880]/30 px-3 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#C5A880] animate-pulse"></span>
+                        <span class="text-xs text-[#E8D9C5] tracking-wider">{{ $activeTable->table_number }}</span>
+                    </div>
+                @else
+                    <a href="{{ route('home') }}" class="text-[10px] tracking-[0.15em] uppercase text-[#C5A880] font-medium px-2.5 py-1 rounded-full bg-[#181614] border border-[#C5A880]/20">
+                        Menü
+                    </a>
+                @endif
+            </div>
         </div>
     </header>
 
