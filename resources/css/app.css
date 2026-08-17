@@ -1,11 +1,181 @@
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+:root {
+  --bg-dark: #0D0C0A;
+  --bg-surface: #141210;
+  --bg-card: rgba(22, 20, 17, 0.8);
+  --gold-accent: #C5A880;
+  --gold-light: #E8D9C5;
+  --gold-dark: #8F7655;
+  --sand-muted: #A89C8F;
+  --border-gold: rgba(197, 168, 128, 0.2);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: #E6E0D8;
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.font-lux-title {
+  font-family: 'Marcellus', serif;
+}
+
+.font-lux-serif {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.header-slide-down {
+  animation: headerSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-fade-down {
+  animation: heroFadeDown 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.specials-fade-in {
+  animation: specialsFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+@keyframes headerSlideDown {
+  from {
+    transform: translate3d(0, -100%, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes heroFadeDown {
+  from {
+    transform: translate3d(0, -25px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes specialsFadeIn {
+  from {
+    transform: translate3d(0, 20px, 0);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.lux-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-gold);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.lux-card:hover {
+  border-color: rgba(197, 168, 128, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(197, 168, 128, 0.15);
+}
+
+.specials-card {
+  background: linear-gradient(145deg, rgba(32, 28, 24, 0.85), rgba(18, 16, 14, 0.9));
+  border: 1px solid rgba(197, 168, 128, 0.35);
+  box-shadow: 0 8px 24px -6px rgba(197, 168, 128, 0.12);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.specials-card:hover {
+  border-color: rgba(197, 168, 128, 0.7);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 14px 32px -6px rgba(197, 168, 128, 0.22);
+}
+
+.reveal-left {
+  opacity: 0;
+  transform: translate3d(-30px, 0, 0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-right {
+  opacity: 0;
+  transform: translate3d(30px, 0, 0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.reveal-up {
+  opacity: 0;
+  transform: translate3d(0, 25px, 0);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.is-visible {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.lux-divider {
+  background: linear-gradient(90deg, transparent, rgba(197, 168, 128, 0.4), transparent);
+}
+
+.modal-backdrop {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.modal-content-in {
+  animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.overlay-content-in {
+  animation: overlayPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes overlayPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
