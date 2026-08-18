@@ -25,12 +25,14 @@
 
             <div class="space-y-3">
                 @foreach($dailySpecials as $special)
-                    <div class="specials-card rounded-xl p-4 flex flex-col justify-between open-product-modal"
+                    <div class="specials-card rounded-xl p-4 flex flex-col justify-between open-product-modal cursor-pointer"
+                         data-id="{{ $special->id }}"
                          data-name="{{ $special->name }}"
                          data-subtitle="{{ $special->sub_title }}"
                          data-desc="{{ $special->description }}"
                          data-notes="{{ $special->taste_notes }}"
                          data-price="{{ $special->formatted_price }}"
+                         data-raw-price="{{ $special->price }}"
                          data-orig-price="{{ $special->original_price ? number_format($special->original_price, 0, ',', '.') . ' ₺' : '' }}"
                          data-badge="{{ $special->badge ?? 'SPECIAL' }}"
                          data-abv="{{ $special->alcohol_percentage }}"
@@ -69,7 +71,7 @@
                                     <span class="text-[9px]">✦</span>
                                     <span class="font-lux-serif italic truncate text-[#E8D9C5]">{{ $special->taste_notes }}</span>
                                 </div>
-                                <span class="text-[9px] text-[#C5A880]/80 uppercase tracking-wider flex-shrink-0 ml-2">Detayları İncele →</span>
+                                <span class="text-[9px] text-[#C5A880]/80 uppercase tracking-wider flex-shrink-0 ml-2">İncele & Sipariş Ver →</span>
                             </div>
                         @endif
                     </div>
@@ -85,8 +87,22 @@
     </div>
 @endif
 
-<div class="max-w-4xl mx-auto px-4 pt-8 pb-20">
-    <div class="text-center space-y-3 mb-10 hero-fade-down">
+<div class="max-w-4xl mx-auto px-4 pt-6 pb-28">
+    @if(session('success'))
+        <div class="bg-[#1C1914] border border-[#C5A880]/40 text-[#E8D9C5] px-4 py-3 rounded-xl text-xs flex items-center gap-2 mb-6 shadow-lg shadow-black/40">
+            <span class="text-[#C5A880]">✦</span>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-[#241414] border border-red-500/40 text-red-200 px-4 py-3 rounded-xl text-xs flex items-center gap-2 mb-6">
+            <span>⚠</span>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
+    <div class="text-center space-y-3 mb-8 hero-fade-down">
         <span class="text-[10px] tracking-[0.3em] uppercase text-[#C5A880] font-medium block">
             Exclusive Mixology & Prestige Cellar
         </span>
@@ -97,6 +113,16 @@
             Seçkin miksoloji tarifleri, vintage şampanyalar ve gece ritüelleri.
         </p>
         <div class="h-[1px] w-16 mx-auto lux-divider pt-1"></div>
+    </div>
+
+    <div class="mb-10 reveal-up">
+        <div class="relative max-w-md mx-auto">
+            <input type="text" id="menu-search" placeholder="İçerik, kokteyl veya tat notası ara..." 
+                   class="w-full bg-[#161412]/90 border border-[#C5A880]/25 rounded-full px-5 py-2.5 pl-10 text-xs md:text-sm text-[#E6E0D8] placeholder-[#7A7166] focus:outline-none focus:border-[#C5A880]/60 focus:ring-1 focus:ring-[#C5A880]/30 transition-all shadow-inner">
+            <svg class="w-4 h-4 text-[#C5A880]/60 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </div>
     </div>
 
     @if(isset($dailySpecials) && $dailySpecials->count() > 0)
@@ -111,12 +137,14 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($dailySpecials as $special)
-                    <div class="specials-card rounded-xl p-5 relative flex flex-col justify-between open-product-modal"
+                    <div class="specials-card rounded-xl p-5 relative flex flex-col justify-between open-product-modal cursor-pointer"
+                         data-id="{{ $special->id }}"
                          data-name="{{ $special->name }}"
                          data-subtitle="{{ $special->sub_title }}"
                          data-desc="{{ $special->description }}"
                          data-notes="{{ $special->taste_notes }}"
                          data-price="{{ $special->formatted_price }}"
+                         data-raw-price="{{ $special->price }}"
                          data-orig-price="{{ $special->original_price ? number_format($special->original_price, 0, ',', '.') . ' ₺' : '' }}"
                          data-badge="{{ $special->badge ?? 'SPECIAL' }}"
                          data-abv="{{ $special->alcohol_percentage }}"
@@ -132,9 +160,6 @@
                                         @if($special->alcohol_percentage > 0)
                                             <span class="text-[9px] text-[#A89C8F] tracking-wider">%{{ $special->alcohol_percentage }} ABV</span>
                                         @endif
-                                        @if($special->volume_ml)
-                                            <span class="text-[9px] text-[#A89C8F] tracking-wider">{{ $special->volume_ml }} ml</span>
-                                        @endif
                                     </div>
                                     <h4 class="font-lux-title text-base md:text-lg text-[#F5EFE6] tracking-wide font-normal">
                                         {{ $special->name }}
@@ -144,17 +169,8 @@
                                     <span class="font-lux-title text-base md:text-lg text-[#E8D9C5] tracking-wider block">
                                         {{ $special->formatted_price }}
                                     </span>
-                                    @if($special->original_price)
-                                        <span class="text-[10px] text-[#7A7166] line-through block">
-                                            {{ number_format($special->original_price, 0, ',', '.') }} ₺
-                                        </span>
-                                    @endif
                                 </div>
                             </div>
-
-                            @if($special->sub_title)
-                                <p class="text-[11px] text-[#C5A880] font-medium mb-2 tracking-wide">{{ $special->sub_title }}</p>
-                            @endif
 
                             @if($special->description)
                                 <p class="text-xs text-[#A89C8F] font-light leading-relaxed mb-3">
@@ -168,23 +184,15 @@
                                 <span class="text-[9px]">✦</span>
                                 <span class="font-lux-serif italic truncate text-[#E8D9C5]">{{ $special->taste_notes }}</span>
                             </div>
-                            <span class="text-[9px] uppercase tracking-wider text-[#A89C8F] flex-shrink-0 ml-2">Detayları Gör →</span>
+                            <button data-id="{{ $special->id }}" data-name="{{ $special->name }}" data-price="{{ $special->price }}" class="quick-add-btn px-2.5 py-1 rounded-full bg-[#C5A880] text-[#0D0C0A] text-[9px] uppercase font-bold tracking-wider hover:brightness-110 transition-all flex-shrink-0 ml-2">
+                                + Ekle
+                            </button>
                         </div>
                     </div>
                 @endforeach
             </div>
         </div>
     @endif
-
-    <div class="mb-8 reveal-up">
-        <div class="relative max-w-md mx-auto">
-            <input type="text" id="menu-search" placeholder="İçerik, kokteyl veya tat notası ara..." 
-                   class="w-full bg-[#161412]/90 border border-[#C5A880]/20 rounded-full px-5 py-2.5 pl-10 text-xs md:text-sm text-[#E6E0D8] placeholder-[#7A7166] focus:outline-none focus:border-[#C5A880]/60 focus:ring-1 focus:ring-[#C5A880]/30 transition-all shadow-inner">
-            <svg class="w-4 h-4 text-[#C5A880]/60 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-        </div>
-    </div>
 
     <div class="sticky top-[57px] z-30 -mx-4 px-4 py-3 bg-[#0D0C0A]/95 backdrop-blur-xl border-y border-[#C5A880]/15 mb-10 overflow-x-auto hide-scrollbar">
         <div class="flex items-center gap-2 min-w-max mx-auto max-w-4xl justify-start md:justify-center">
@@ -215,12 +223,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 md:gap-4">
                     @foreach($category->activeProducts as $pIndex => $product)
-                        <div class="product-card lux-card rounded-xl p-4 relative flex flex-col justify-between open-product-modal {{ $pIndex % 2 == 0 ? 'reveal-left' : 'reveal-right' }}"
+                        <div class="product-card lux-card rounded-xl p-4 relative flex flex-col justify-between open-product-modal cursor-pointer {{ $pIndex % 2 == 0 ? 'reveal-left' : 'reveal-right' }}"
+                             data-id="{{ $product->id }}"
                              data-name="{{ $product->name }}"
                              data-subtitle="{{ $product->sub_title }}"
                              data-desc="{{ $product->description }}"
                              data-notes="{{ $product->taste_notes }}"
                              data-price="{{ $product->formatted_price }}"
+                             data-raw-price="{{ $product->price }}"
                              data-orig-price="{{ $product->original_price ? number_format($product->original_price, 0, ',', '.') . ' ₺' : '' }}"
                              data-badge="{{ $product->badge }}"
                              data-abv="{{ $product->alcohol_percentage }}"
@@ -257,15 +267,15 @@
                                 @endif
                             </div>
 
-                            @if($product->taste_notes)
-                                <div class="pt-2.5 mt-2 border-t border-[#C5A880]/10 flex items-center justify-between text-[10px] text-[#8C8276]">
-                                    <div class="flex items-center gap-1.5 truncate">
-                                        <span class="text-[#C5A880] text-[9px]">✦</span>
-                                        <span class="font-lux-serif italic truncate text-[#A89C8F]">{{ $product->taste_notes }}</span>
-                                    </div>
-                                    <span class="text-[8px] text-[#C5A880]/70 flex-shrink-0 ml-1">İncele ↗</span>
+                            <div class="pt-2.5 mt-2 border-t border-[#C5A880]/10 flex items-center justify-between text-[10px] text-[#8C8276]">
+                                <div class="flex items-center gap-1.5 truncate">
+                                    <span class="text-[#C5A880] text-[9px]">✦</span>
+                                    <span class="font-lux-serif italic truncate text-[#A89C8F]">{{ $product->taste_notes }}</span>
                                 </div>
-                            @endif
+                                <button data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}" class="quick-add-btn px-2.5 py-1 rounded-full bg-[#1F1B16] border border-[#C5A880]/40 text-[#C5A880] text-[9px] uppercase font-bold tracking-wider hover:bg-[#C5A880] hover:text-[#0D0C0A] transition-all flex-shrink-0 ml-1">
+                                    + Ekle
+                                </button>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -274,9 +284,85 @@
     </div>
 </div>
 
+<div id="cart-drawer" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div id="cart-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
+    <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4 max-h-[85vh] flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between border-b border-[#C5A880]/20 pb-3 mb-3">
+                <div>
+                    <span class="text-[9px] uppercase tracking-widest text-[#C5A880] font-medium block">Masa Siparişi</span>
+                    <h3 class="font-lux-title text-lg text-[#F5EFE6]">Masa Sepetim</h3>
+                </div>
+                <button id="close-cart-btn" class="w-8 h-8 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center hover:text-white">
+                    ✕
+                </button>
+            </div>
+
+            <div id="cart-items-container" class="space-y-2.5 overflow-y-auto max-h-[38vh] pr-1 hide-scrollbar"></div>
+        </div>
+
+        <div class="space-y-3 pt-3 border-t border-[#C5A880]/20">
+            <div>
+                <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Garson / Barmen Özel Notu</label>
+                <input type="text" id="order-general-note" 
+                       class="w-full bg-[#1B1814] border border-[#C5A880]/20 rounded-xl px-3.5 py-2 text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60">
+            </div>
+
+            <div class="flex items-baseline justify-between py-1">
+                <span class="text-xs uppercase tracking-widest text-[#A89C8F]">Toplam Tutar</span>
+                <span id="cart-drawer-total" class="font-lux-title text-xl font-bold text-[#E8D9C5]">0 ₺</span>
+            </div>
+
+            @if(session('guest_id'))
+                <button id="submit-order-btn" data-table="{{ $activeTable->table_number ?? 'T-01' }}" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.99] transition-all shadow-lg shadow-[#C5A880]/25">
+                    Siparişi Masaya İlet
+                </button>
+            @else
+                <button class="open-join-table-btn w-full py-3.5 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all">
+                    Sipariş İçin VIP Kodunuzla Giriş Yapın
+                </button>
+            @endif
+        </div>
+    </div>
+</div>
+
+<div id="join-table-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div id="join-modal-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
+    <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4">
+        <button id="close-join-modal-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center hover:text-white">
+            ✕
+        </button>
+
+        <div class="text-center space-y-1">
+            <span class="text-[9px] uppercase tracking-widest text-[#C5A880] font-medium block">Table Connect</span>
+            <h3 class="font-lux-title text-xl text-[#F5EFE6]">Masaya Bağlan & Katıl</h3>
+            <p class="font-lux-serif italic text-xs text-[#A89C8F]">Resepsiyondan aldığınız VIP Kodu girerek masadaki sipariş oturumunuzu başlatın.</p>
+        </div>
+
+        <form action="{{ route('table.join') }}" method="POST" class="space-y-3.5">
+            @csrf
+            <div>
+                <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Masa Numarası *</label>
+                <input type="text" name="table_number" value="{{ $activeTable->table_number ?? 'VIP-01' }}" required 
+                       class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-2.5 text-xs text-center font-mono uppercase text-[#E8D9C5] focus:outline-none focus:border-[#C5A880]">
+            </div>
+
+            <div>
+                <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Resepsiyon VIP Misafir Kodunuz *</label>
+                <input type="text" name="guest_code" required 
+                       class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-3 text-sm text-center font-mono uppercase text-[#F5EFE6] tracking-widest focus:outline-none focus:border-[#C5A880]">
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all shadow-md shadow-[#C5A880]/20">
+                Masaya Katıl & Siparişe Başla
+            </button>
+        </form>
+    </div>
+</div>
+
 <div id="product-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/80 modal-backdrop transition-opacity"></div>
-    <div class="relative bg-[#161411] border border-[#C5A880]/35 rounded-2xl max-w-lg w-full p-6 md:p-7 shadow-2xl shadow-black/80 z-10 modal-content-in space-y-4">
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
+    <div class="relative bg-[#161411] border border-[#C5A880]/35 rounded-3xl max-w-lg w-full p-6 md:p-7 shadow-2xl shadow-black/80 z-10 modal-content-in space-y-4 max-h-[85vh] overflow-y-auto hide-scrollbar">
         <button id="modal-close-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#201C18] border border-[#C5A880]/30 text-[#C5A880] hover:text-white flex items-center justify-center transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -314,8 +400,12 @@
             </div>
         </div>
 
-        <div class="pt-2 text-center">
-            <span class="text-[10px] text-[#8C8276] tracking-wider uppercase block">VIP Masanıza Özel Servis Edilir</span>
+        <div class="pt-2 space-y-2">
+            <input type="text" id="modal-order-note" 
+                   class="w-full bg-[#141210] border border-[#C5A880]/20 rounded-xl px-3.5 py-2 text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60">
+            <button id="modal-add-to-cart-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.99] transition-all shadow-md shadow-[#C5A880]/20">
+                Sepete Ekle
+            </button>
         </div>
     </div>
 </div>
