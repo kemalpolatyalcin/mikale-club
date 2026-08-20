@@ -151,13 +151,18 @@ class ReceptionController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'guest_code' => 'nullable|string|max:50|unique:club_guests,guest_code',
             'phone' => 'nullable|string|max:50',
             'club_table_id' => 'nullable|exists:club_tables,id',
         ]);
 
-        $code = 'VIP-' . strtoupper(Str::random(4));
-        while (ClubGuest::where('guest_code', $code)->exists()) {
+        if (!empty($validated['guest_code'])) {
+            $code = strtoupper(trim($validated['guest_code']));
+        } else {
             $code = 'VIP-' . strtoupper(Str::random(4));
+            while (ClubGuest::where('guest_code', $code)->exists()) {
+                $code = 'VIP-' . strtoupper(Str::random(4));
+            }
         }
 
         ClubGuest::create([
@@ -178,14 +183,17 @@ class ReceptionController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'guest_code' => 'required|string|max:50|unique:club_guests,guest_code,' . $guest->id,
             'phone' => 'nullable|string|max:50',
             'club_table_id' => 'nullable|exists:club_tables,id',
             'status' => 'required|in:active,checked_out',
         ]);
 
+        $validated['guest_code'] = strtoupper(trim($validated['guest_code']));
+
         $guest->update($validated);
 
-        return redirect()->route('reception.index', ['tab' => 'guests'])->with('success', "Misafir {$guest->name} bilgileri güncellendi.");
+        return redirect()->route('reception.index', ['tab' => 'guests'])->with('success', "Misafir {$guest->name} ({$guest->guest_code}) bilgileri güncellendi.");
     }
 
     public function deleteGuest(ClubGuest $guest)
@@ -413,7 +421,8 @@ class ReceptionController extends Controller
             'capacity' => 'required|integer|min:1|max:50',
         ]);
 
-        $qrToken = 'qr-' . strtolower($validated['table_number']) . '-' . Str::random(8);
+        $duration = config('mikale.token_expiration_minutes', 240);
+        $qrToken = 'qr-' . strtolower($validated['table_number']) . '-' . Str::random(12);
 
         ClubTable::create([
             'table_number' => strtoupper($validated['table_number']),
@@ -421,10 +430,11 @@ class ReceptionController extends Controller
             'section' => $validated['section'],
             'capacity' => $validated['capacity'],
             'qr_token' => $qrToken,
+            'token_expires_at' => now()->addMinutes($duration),
             'is_active' => true,
         ]);
 
-        return redirect()->route('reception.index', ['tab' => 'tables'])->with('success', "Masa {$validated['table_number']} ve benzersiz QR kodu başarıyla üretildi.");
+        return redirect()->route('reception.index', ['tab' => 'tables'])->with('success', "Masa {$validated['table_number']} ve zaman ayarlı QR kodu başarıyla üretildi.");
     }
 
     public function updateTable(Request $request, ClubTable $table)
@@ -445,7 +455,15 @@ class ReceptionController extends Controller
     public function toggleTable(ClubTable $table)
     {
         if (!Auth::check()) return redirect()->route('reception.login');
-        $table->update(['is_active' => !$table->is_active]);
+        
+        $newActive = !$table->is_active;
+        if (!$newActive) {
+            $table->expireToken();
+            $table->update(['is_active' => false]);
+        } else {
+            $table->generateTimedToken();
+        }
+
         return redirect()->route('reception.index', ['tab' => 'tables'])->with('success', "{$table->table_number} durumu güncellendi.");
     }
 
@@ -460,10 +478,9 @@ class ReceptionController extends Controller
     {
         if (!Auth::check()) return redirect()->route('reception.login');
 
-        $newQr = 'qr-' . strtolower($table->table_number) . '-' . Str::random(8);
-        $table->update(['qr_token' => $newQr]);
+        $table->generateTimedToken();
 
-        return redirect()->route('reception.index', ['tab' => 'tables'])->with('success', "{$table->table_number} masasının QR kodu yenilendi.");
+        return redirect()->route('reception.index', ['tab' => 'tables'])->with('success', "{$table->table_number} masasının süreli QR kodu yenilendi.");
     }
 
     public function printTableQr(ClubTable $table)
@@ -498,12 +515,23 @@ class ReceptionController extends Controller
             'paid_at' => now(),
         ]);
 
+        $table = $guest->table;
+
         $guest->update([
             'status' => 'checked_out',
             'check_out_at' => now(),
         ]);
 
-        return redirect()->route('reception.index', ['tab' => 'guests'])->with('success', "{$guest->name} hesabı kapatıldı ve çıkış işlemi tamamlandı.");
+        if ($table) {
+            $hasOtherActiveGuests = ClubGuest::where('club_table_id', $table->id)
+                ->where('status', 'active')
+                ->exists();
+            if (!$hasOtherActiveGuests) {
+                $table->generateTimedToken();
+            }
+        }
+
+        return redirect()->route('reception.index', ['tab' => 'guests'])->with('success', "{$guest->name} hesabı kapatıldı ve masa oturumu yenilendi.");
     }
 
     public function updateOrderStatus(Request $request, Order $order)

@@ -125,7 +125,7 @@
 
             <div class="flex items-center gap-2 md:gap-3">
                 <div class="relative hidden sm:block">
-                    <input type="text" id="portal-live-search" placeholder="Listede canlı ara..." 
+                    <input type="text" id="portal-live-search" 
                            class="bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-3 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#8F6E40] w-36 md:w-48 transition-all">
                 </div>
                 <span class="px-2.5 py-1 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] text-[10px] text-[#16A34A] font-semibold font-mono whitespace-nowrap">
@@ -262,123 +262,83 @@
             </section>
 
             <section id="section-categories" class="portal-tab-content {{ ($tab ?? '') === 'categories' ? '' : 'hidden' }} space-y-6">
-                <div class="flex items-center justify-between bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
                     <div>
-                        <h3 class="font-lux-title text-base font-bold text-[#0F172A]">Kategoriler ve Sıralama Yönetimi</h3>
-                        <span class="text-xs text-[#64748B]">Kategorilerin ve içindeki ürünlerin sırasını ok butonlarıyla anında değiştirin</span>
+                        <h3 class="font-lux-title text-base font-bold text-[#0F172A]">Kategori Yönetimi & Sıralama</h3>
+                        <span class="text-xs text-[#64748B]">Kategorileri ekleyin, düzenleyin, sıralamasını oklarla yönetin veya aktif/pasif yapın</span>
                     </div>
                     <button type="button" onclick="document.getElementById('add-category-modal').classList.remove('hidden')" class="px-4 py-2.5 rounded-xl bg-[#8F6E40] text-white font-semibold text-xs tracking-wider uppercase hover:bg-[#725732] transition-all shadow-sm">
                         + Yeni Kategori Ekle
                     </button>
                 </div>
 
-                <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($categories as $index => $category)
-                        <div class="category-card-item bg-[#FFFFFF] border border-[#E2E8F0] rounded-3xl p-5 md:p-6 shadow-sm space-y-4" data-search="{{ strtolower($category->name . ' ' . $category->description) }}">
-                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[#F1F5F9] pb-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex flex-col items-center justify-center bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-1 shadow-inner">
-                                        <form action="{{ route('reception.category.reorder', $category) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="direction" value="up">
-                                            <button type="submit" title="Kategoriyi Yukarı Taşı" class="p-1 hover:text-[#8F6E40] text-xs leading-none font-bold">▲</button>
-                                        </form>
-                                        <span class="text-[10px] font-mono font-bold text-[#64748B] px-1">{{ $index + 1 }}</span>
-                                        <form action="{{ route('reception.category.reorder', $category) }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="direction" value="down">
-                                            <button type="submit" title="Kategoriyi Aşağı Taşı" class="p-1 hover:text-[#8F6E40] text-xs leading-none font-bold">▼</button>
-                                        </form>
+                        <div class="category-card-item bg-[#FFFFFF] border border-[#E2E8F0] rounded-3xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4" data-search="{{ strtolower($category->name . ' ' . $category->description) }}">
+                            <div class="space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex flex-col items-center justify-center bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-1 shadow-inner flex-shrink-0">
+                                            <form action="{{ route('reception.category.reorder', $category) }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="direction" value="up">
+                                                <button type="submit" title="Kategoriyi Yukarı Taşı" class="p-1 hover:text-[#8F6E40] text-xs leading-none font-bold">▲</button>
+                                            </form>
+                                            <span class="text-[10px] font-mono font-bold text-[#64748B] px-1">{{ $index + 1 }}</span>
+                                            <form action="{{ route('reception.category.reorder', $category) }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="direction" value="down">
+                                                <button type="submit" title="Kategoriyi Aşağı Taşı" class="p-1 hover:text-[#8F6E40] text-xs leading-none font-bold">▼</button>
+                                            </form>
+                                        </div>
+
+                                        <div>
+                                            <h4 class="font-lux-title text-lg font-bold text-[#0F172A]">{{ $category->name }}</h4>
+                                            <span class="text-[11px] text-[#64748B] block font-mono">Slug: {{ $category->slug }}</span>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <div class="flex items-center gap-3">
-                                            <h4 class="font-lux-title text-lg font-bold text-[#0F172A]">{{ $category->name }}</h4>
-                                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $category->is_active ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-[#F1F5F9] text-[#64748B]' }}">
-                                                {{ $category->is_active ? 'Aktif Kategori' : 'Pasif' }}
-                                            </span>
-                                        </div>
-                                        @if($category->description)
-                                            <p class="text-xs text-[#64748B] mt-0.5">{{ $category->description }}</p>
-                                        @endif
-                                    </div>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $category->is_active ? 'bg-[#DCFCE7] text-[#16A34A]' : 'bg-[#F1F5F9] text-[#64748B]' }}">
+                                        {{ $category->is_active ? 'Aktif' : 'Pasif' }}
+                                    </span>
                                 </div>
 
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <button type="button" onclick="openAddProductModalForCategory({{ $category->id }}, '{{ addslashes($category->name) }}')" class="px-3 py-1.5 rounded-xl bg-[#FDFBF7] border border-[#B38E5D]/40 text-xs font-semibold text-[#8F6E40] hover:bg-[#8F6E40] hover:text-white transition-all">
-                                        + Bu Kategoriye Ürün Ekle
-                                    </button>
-                                    <button type="button" data-cat="{{ htmlspecialchars(json_encode($category), ENT_QUOTES, 'UTF-8') }}" onclick="openEditCategoryModalFromBtn(this)" class="px-3 py-1.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-semibold text-[#2563EB] hover:bg-[#DBEAFE]">
-                                        Kategoriyi Düzenle
-                                    </button>
+                                @if($category->description)
+                                    <p class="text-xs text-[#64748B] line-clamp-2">{{ $category->description }}</p>
+                                @endif
+
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 rounded-xl bg-[#F8F9FA] border border-[#CBD5E1] text-xs font-semibold text-[#475569]">
+                                        📦 {{ $category->products->count() }} Ürün Kayıtlı
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-[#F1F5F9] flex items-center justify-between gap-2">
+                                <button type="button" 
+                                        data-id="{{ $category->id }}"
+                                        data-name="{{ $category->name }}"
+                                        data-desc="{{ $category->description }}"
+                                        data-order="{{ $category->sort_order }}"
+                                        onclick="openEditCategoryModalFromBtn(this)" 
+                                        class="px-3 py-1.5 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-semibold text-[#2563EB] hover:bg-[#DBEAFE] transition-all">
+                                    Düzenle
+                                </button>
+
+                                <div class="flex items-center gap-2">
                                     <form action="{{ route('reception.category.toggle', $category) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-[#F1F5F9] text-xs font-semibold text-[#475569]">
+                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-[#F1F5F9] text-xs font-semibold text-[#475569] hover:bg-[#E2E8F0] transition-all">
                                             {{ $category->is_active ? 'Gizle' : 'Aç' }}
                                         </button>
                                     </form>
                                     <form action="{{ route('reception.category.delete', $category) }}" method="POST" onsubmit="return confirm('{{ $category->name }} kategorisini ve içindeki ürünleri silmek istediğinize emin misiniz?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-[#FEF2F2] border border-[#FCA5A5] text-xs font-bold text-[#DC2626]">
+                                        <button type="submit" class="px-2.5 py-1.5 rounded-xl bg-[#FEF2F2] border border-[#FCA5A5] text-xs font-bold text-[#DC2626] hover:bg-[#FEE2E2] transition-all">
                                             Sil
                                         </button>
                                     </form>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h5 class="text-xs font-bold uppercase tracking-wider text-[#64748B] mb-3">Bu Kategorideki Ürünler ({{ $category->products->count() }}) - Sıralamayı Oklarla Yönetin:</h5>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    @forelse($category->products as $pIndex => $catProduct)
-                                        <div class="bg-[#F8F9FA] border border-[#E2E8F0] rounded-2xl p-3.5 flex flex-col justify-between space-y-2">
-                                            <div class="flex items-start gap-2.5">
-                                                <div class="flex flex-col items-center justify-center bg-white border border-[#CBD5E1] rounded-lg p-0.5 shadow-sm flex-shrink-0">
-                                                    <form action="{{ route('reception.product.reorder', $catProduct) }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="direction" value="up">
-                                                        <input type="hidden" name="tab" value="categories">
-                                                        <button type="submit" title="Ürünü Yukarı Taşı" class="p-0.5 hover:text-[#8F6E40] text-[10px] leading-none font-bold">▲</button>
-                                                    </form>
-                                                    <span class="text-[9px] font-mono font-bold text-[#64748B]">{{ $pIndex + 1 }}</span>
-                                                    <form action="{{ route('reception.product.reorder', $catProduct) }}" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="direction" value="down">
-                                                        <input type="hidden" name="tab" value="categories">
-                                                        <button type="submit" title="Ürünü Aşağı Taşı" class="p-0.5 hover:text-[#8F6E40] text-[10px] leading-none font-bold">▼</button>
-                                                    </form>
-                                                </div>
-
-                                                <div class="flex-1 min-w-0">
-                                                    <div class="flex items-center justify-between mb-1">
-                                                        <h6 class="text-xs font-bold text-[#0F172A] truncate">{{ $catProduct->name }}</h6>
-                                                        <span class="font-lux-title text-xs font-bold text-[#8F6E40]">{{ $catProduct->formatted_price }}</span>
-                                                    </div>
-                                                    @if($catProduct->description)
-                                                        <p class="text-[11px] text-[#64748B] line-clamp-1">{{ $catProduct->description }}</p>
-                                                    @endif
-                                                    @if($catProduct->taste_notes)
-                                                        <span class="text-[10px] text-[#8F6E40] font-medium block truncate">✦ {{ $catProduct->taste_notes }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            <div class="pt-2 border-t border-[#E2E8F0] flex items-center justify-between text-[11px]">
-                                                <button type="button" data-prod="{{ htmlspecialchars(json_encode($catProduct), ENT_QUOTES, 'UTF-8') }}" onclick="openEditProductModalFromBtn(this)" class="font-bold text-[#2563EB] hover:underline">
-                                                    Ürünü Düzenle
-                                                </button>
-                                                <form action="{{ route('reception.product.delete', $catProduct) }}" method="POST" onsubmit="return confirm('{{ $catProduct->name }} ürününü silmek istediğinize emin misiniz?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="font-bold text-[#DC2626] hover:underline">Sil</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="col-span-full py-4 text-center text-xs text-[#94A3B8] bg-[#F8F9FA] rounded-xl border border-dashed border-[#CBD5E1]">
-                                            Bu kategoride henüz ürün bulunmuyor.
-                                        </div>
-                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -462,8 +422,19 @@
                                 </div>
 
                                 <div class="flex items-center gap-2">
-                                    <button type="button" data-prod="{{ htmlspecialchars(json_encode($product), ENT_QUOTES, 'UTF-8') }}" onclick="openEditProductModalFromBtn(this)" class="px-3.5 py-2 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-bold text-[#2563EB] hover:bg-[#DBEAFE] transition-all">
-                                        Düzenle & Kategori Değiştir
+                                    <button type="button" 
+                                            data-id="{{ $product->id }}"
+                                            data-cat-id="{{ $product->category_id }}"
+                                            data-name="{{ $product->name }}"
+                                            data-price="{{ $product->price }}"
+                                            data-badge="{{ $product->badge }}"
+                                            data-notes="{{ $product->taste_notes }}"
+                                            data-desc="{{ $product->description }}"
+                                            data-order="{{ $product->sort_order }}"
+                                            data-special="{{ ($product->is_featured || $product->is_special) ? '1' : '0' }}"
+                                            onclick="openEditProductModalFromBtn(this)" 
+                                            class="px-3.5 py-2 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-bold text-[#2563EB] hover:bg-[#DBEAFE] transition-all">
+                                        Düzenle
                                     </button>
                                     <form action="{{ route('reception.product.toggle', $product) }}" method="POST">
                                         @csrf
@@ -497,13 +468,19 @@
                             @csrf
                             <div>
                                 <label class="block text-xs font-semibold text-[#475569] mb-1">Misafir Adı Soyadı *</label>
-                                <input type="text" name="name" value="Kemal Polat Yalçın" required
+                                <input type="text" name="name" required
                                        class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40]">
                             </div>
 
                             <div>
+                                <label class="block text-xs font-semibold text-[#475569] mb-1">VIP Kodu (Opsiyonel / Boşsa Otomatik Üretilir)</label>
+                                <input type="text" name="guest_code"
+                                       class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-xs text-[#0F172A] font-mono uppercase font-medium focus:outline-none focus:border-[#8F6E40]">
+                            </div>
+
+                            <div>
                                 <label class="block text-xs font-semibold text-[#475569] mb-1">Telefon Numarası</label>
-                                <input type="text" name="phone" value="0532 555 19 23"
+                                <input type="text" name="phone"
                                        class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40]">
                             </div>
 
@@ -518,7 +495,7 @@
                             </div>
 
                             <button type="submit" class="w-full py-3 rounded-xl bg-[#8F6E40] text-white font-bold text-xs tracking-wider uppercase hover:bg-[#725732] transition-all shadow-md">
-                                Misafiri Kaydet & VIP Kod Üret
+                                Misafiri Kaydet & VIP Kod Oluştur
                             </button>
                         </form>
                     </div>
@@ -557,7 +534,15 @@
                                                 <span class="font-lux-title text-sm font-bold text-[#0F172A]">{{ number_format($guest->totalSpent(), 0, ',', '.') }} ₺</span>
                                             </div>
 
-                                            <button type="button" data-guest="{{ htmlspecialchars(json_encode($guest), ENT_QUOTES, 'UTF-8') }}" onclick="openEditGuestModalFromBtn(this)" class="px-3 py-2 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-semibold text-[#2563EB] hover:bg-[#DBEAFE]">
+                                            <button type="button" 
+                                                    data-id="{{ $guest->id }}"
+                                                    data-name="{{ $guest->name }}"
+                                                    data-code="{{ $guest->guest_code }}"
+                                                    data-phone="{{ $guest->phone }}"
+                                                    data-table-id="{{ $guest->club_table_id }}"
+                                                    data-status="{{ $guest->status }}"
+                                                    onclick="openEditGuestModalFromBtn(this)" 
+                                                    class="px-3 py-2 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-semibold text-[#2563EB] hover:bg-[#DBEAFE]">
                                                 Düzenle
                                             </button>
 
@@ -628,9 +613,20 @@
                                 </div>
                             </div>
 
+                            <a href="{{ route('table.show', $table->qr_token) }}" target="_blank" class="w-full py-2 px-3 rounded-xl bg-[#FDFBF7] hover:bg-[#8F6E40] border border-[#B38E5D]/40 text-[#8F6E40] hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-sm group">
+                                <span>🍸 Menüyü Görüntüle</span>
+                                <span class="group-hover:translate-x-0.5 transition-transform">↗</span>
+                            </a>
+
                             <div class="pt-2 border-t border-[#F1F5F9] flex items-center justify-between text-xs">
                                 <div class="flex items-center gap-2">
-                                    <button type="button" data-table="{{ htmlspecialchars(json_encode($table), ENT_QUOTES, 'UTF-8') }}" onclick="openEditTableModalFromBtn(this)" class="font-semibold text-[#2563EB] hover:underline">
+                                    <button type="button" 
+                                            data-id="{{ $table->id }}"
+                                            data-name="{{ $table->name }}"
+                                            data-section="{{ $table->section }}"
+                                            data-capacity="{{ $table->capacity }}"
+                                            onclick="openEditTableModalFromBtn(this)" 
+                                            class="font-semibold text-[#2563EB] hover:underline">
                                         Düzenle
                                     </button>
                                     <span class="text-[#CBD5E1]">•</span>
@@ -852,7 +848,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-[#475569] mb-1">Rozet / Badge</label>
-                    <input type="text" name="badge" placeholder="Örn: SIGNATURE" class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-2.5 text-xs text-[#0F172A] font-medium">
+                    <input type="text" name="badge" class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-2.5 text-xs text-[#0F172A] font-medium">
                 </div>
             </div>
             <div>
@@ -954,7 +950,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-[#475569] mb-1">Kapasite *</label>
-                    <input type="number" name="capacity" value="4" required class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-2.5 text-xs text-[#0F172A] font-medium">
+                    <input type="number" name="capacity" required class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-2.5 text-xs text-[#0F172A] font-medium">
                 </div>
             </div>
             <button type="submit" class="w-full py-3 rounded-xl bg-[#8F6E40] text-white font-bold text-xs uppercase tracking-wider hover:bg-[#725732] transition-all shadow-md">
@@ -1006,6 +1002,10 @@
             <div>
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Misafir Adı Soyadı *</label>
                 <input type="text" name="name" id="edit-guest-name" required class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-2.5 text-xs text-[#0F172A] font-medium">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-[#475569] mb-1">VIP Kodu *</label>
+                <input type="text" name="guest_code" id="edit-guest-code" required class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl p-2.5 text-xs text-[#0F172A] font-mono uppercase font-bold focus:outline-none focus:border-[#8F6E40]">
             </div>
             <div>
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Telefon Numarası</label>
@@ -1145,14 +1145,16 @@
     }
 
     function openEditCategoryModalFromBtn(button) {
-        try {
-            const category = JSON.parse(button.getAttribute('data-cat'));
-            document.getElementById('edit-cat-name').value = category.name || '';
-            document.getElementById('edit-cat-desc').value = category.description || '';
-            document.getElementById('edit-cat-order').value = category.sort_order || 0;
-            document.getElementById('edit-category-form').action = '/reception/categories/' + category.id + '/update';
-            document.getElementById('edit-category-modal').classList.remove('hidden');
-        } catch(e) {}
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const desc = button.getAttribute('data-desc');
+        const order = button.getAttribute('data-order');
+
+        document.getElementById('edit-cat-name').value = name || '';
+        document.getElementById('edit-cat-desc').value = desc || '';
+        document.getElementById('edit-cat-order').value = order || 0;
+        document.getElementById('edit-category-form').action = '/reception/categories/' + id + '/update';
+        document.getElementById('edit-category-modal').classList.remove('hidden');
     }
 
     function openAddProductModalForCategory(categoryId, categoryName) {
@@ -1162,42 +1164,56 @@
     }
 
     function openEditProductModalFromBtn(button) {
-        try {
-            const product = JSON.parse(button.getAttribute('data-prod'));
-            document.getElementById('edit-prod-category').value = product.category_id;
-            document.getElementById('edit-prod-name').value = product.name || '';
-            document.getElementById('edit-prod-price').value = product.price || '';
-            document.getElementById('edit-prod-badge').value = product.badge || '';
-            document.getElementById('edit-prod-notes').value = product.taste_notes || '';
-            document.getElementById('edit-prod-desc').value = product.description || '';
-            document.getElementById('edit-prod-order').value = product.sort_order || 0;
-            document.getElementById('edit-prod-special').checked = !!(product.is_featured || product.is_special);
-            document.getElementById('edit-product-form').action = '/reception/products/' + product.id + '/update';
-            document.getElementById('edit-product-modal').classList.remove('hidden');
-        } catch(e) {}
+        const id = button.getAttribute('data-id');
+        const catId = button.getAttribute('data-cat-id');
+        const name = button.getAttribute('data-name');
+        const price = button.getAttribute('data-price');
+        const badge = button.getAttribute('data-badge');
+        const notes = button.getAttribute('data-notes');
+        const desc = button.getAttribute('data-desc');
+        const order = button.getAttribute('data-order');
+        const special = button.getAttribute('data-special');
+
+        document.getElementById('edit-prod-category').value = catId || '';
+        document.getElementById('edit-prod-name').value = name || '';
+        document.getElementById('edit-prod-price').value = price || '';
+        document.getElementById('edit-prod-badge').value = badge || '';
+        document.getElementById('edit-prod-notes').value = notes || '';
+        document.getElementById('edit-prod-desc').value = desc || '';
+        document.getElementById('edit-prod-order').value = order || 0;
+        document.getElementById('edit-prod-special').checked = (special === '1');
+        document.getElementById('edit-product-form').action = '/reception/products/' + id + '/update';
+        document.getElementById('edit-product-modal').classList.remove('hidden');
     }
 
     function openEditTableModalFromBtn(button) {
-        try {
-            const table = JSON.parse(button.getAttribute('data-table'));
-            document.getElementById('edit-table-name').value = table.name || '';
-            document.getElementById('edit-table-section').value = table.section || '';
-            document.getElementById('edit-table-capacity').value = table.capacity || 4;
-            document.getElementById('edit-table-form').action = '/reception/tables/' + table.id + '/update';
-            document.getElementById('edit-table-modal').classList.remove('hidden');
-        } catch(e) {}
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const section = button.getAttribute('data-section');
+        const capacity = button.getAttribute('data-capacity');
+
+        document.getElementById('edit-table-name').value = name || '';
+        document.getElementById('edit-table-section').value = section || '';
+        document.getElementById('edit-table-capacity').value = capacity || 4;
+        document.getElementById('edit-table-form').action = '/reception/tables/' + id + '/update';
+        document.getElementById('edit-table-modal').classList.remove('hidden');
     }
 
     function openEditGuestModalFromBtn(button) {
-        try {
-            const guest = JSON.parse(button.getAttribute('data-guest'));
-            document.getElementById('edit-guest-name').value = guest.name || '';
-            document.getElementById('edit-guest-phone').value = guest.phone || '';
-            document.getElementById('edit-guest-table').value = guest.club_table_id || '';
-            document.getElementById('edit-guest-status').value = guest.status || 'active';
-            document.getElementById('edit-guest-form').action = '/reception/guests/' + guest.id + '/update';
-            document.getElementById('edit-guest-modal').classList.remove('hidden');
-        } catch(e) {}
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const code = button.getAttribute('data-code');
+        const phone = button.getAttribute('data-phone');
+        const tableId = button.getAttribute('data-table-id');
+        const status = button.getAttribute('data-status');
+
+        document.getElementById('edit-guest-name').value = name || '';
+        document.getElementById('edit-guest-code').value = code || '';
+        document.getElementById('edit-guest-phone').value = phone || '';
+        document.getElementById('edit-guest-table').value = tableId || '';
+        document.getElementById('edit-guest-status').value = status || 'active';
+        document.getElementById('edit-guest-form').action = '/reception/guests/' + id + '/update';
+        document.getElementById('edit-guest-modal').classList.remove('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', () => {

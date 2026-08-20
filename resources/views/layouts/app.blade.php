@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Marcellus&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-[#0D0C0A] text-[#E6E0D8] antialiased min-h-screen selection:bg-[#C5A880] selection:text-black {{ !request()->routeIs('reception.*', 'portal.*') ? 'pb-28' : '' }}">
@@ -32,9 +33,9 @@
                 </a>
 
                 @if(session('guest_id'))
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-[#181614] border border-[#C5A880]/40 px-2.5 py-1 rounded-full text-xs shadow-inner">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-[#E8D9C5] truncate max-w-[80px] sm:max-w-[120px] font-medium text-[11px]">{{ session('guest_name') }}</span>
+                    <div class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 sm:gap-2 bg-[#181614] border border-[#C5A880]/40 px-2 sm:px-2.5 py-1 rounded-full text-xs shadow-inner">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+                        <span class="text-[#E8D9C5] truncate max-w-[60px] sm:max-w-[120px] font-medium text-[10px] sm:text-[11px]">{{ session('guest_name') }}</span>
                         <span class="text-[9px] font-mono text-[#C5A880] font-bold">[{{ session('guest_code') }}]</span>
                         <form action="{{ route('table.leave') }}" method="POST" class="inline">
                             @csrf
@@ -50,13 +51,13 @@
         @yield('content')
     </main>
 
-    <div id="order-toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 bg-[#1A1713] border border-[#C5A880]/50 text-[#F5EFE6] px-4 py-2.5 rounded-full shadow-2xl shadow-black text-xs flex items-center gap-2 translate-y-32 opacity-0 pointer-events-none transition-all duration-300">
+    <div id="order-toast" class="fixed bottom-24 sm:bottom-28 left-1/2 -translate-x-1/2 z-50 bg-[#1A1713] border border-[#C5A880]/50 text-[#F5EFE6] px-4 py-2.5 rounded-full shadow-2xl shadow-black text-xs flex items-center gap-2 translate-y-32 opacity-0 pointer-events-none transition-all duration-300">
         <span class="text-[#C5A880]">✦</span>
         <span id="toast-msg">Ürün sepete eklendi</span>
     </div>
 
     @if(!request()->routeIs('reception.*', 'portal.*'))
-        <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-md">
+        <div class="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-md pb-[env(safe-area-inset-bottom,0px)]">
             <nav class="bg-[#14120F]/90 backdrop-blur-2xl border border-[#C5A880]/30 rounded-full p-1.5 shadow-[0_15px_45px_rgba(0,0,0,0.85)] ring-1 ring-white/5 flex items-center justify-between transition-all">
                 <a href="{{ route('home') }}" id="toolbar-tab-menu" 
                    class="toolbar-item flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-full transition-all duration-300 active:scale-90 {{ (request()->routeIs('home', 'menu')) ? 'bg-[#C5A880]/20 border border-[#C5A880]/40 text-[#F5EFE6] shadow-inner font-semibold' : 'text-[#A89C8F] hover:text-[#E8D9C5] border border-transparent' }}">

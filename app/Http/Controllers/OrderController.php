@@ -9,19 +9,64 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
-    public function showTable(string $token)
+    public function showTable(Request $request, string $token)
     {
         $table = ClubTable::where('qr_token', $token)
             ->orWhere('table_number', $token)
-            ->firstOrFail();
+            ->first();
 
-        session(['current_table_id' => $table->id]);
+        if (!$table) {
+            return redirect()->route('home')->with('error', 'Geçersiz masa bağlantısı.');
+        }
 
-        return redirect()->route('home', ['table' => $table->table_number]);
+        if (!$table->isTokenValid($token)) {
+            return redirect()->route('home')->with('error', 'Masa QR oturumunun süresi dolmuş veya masa kapatılmıştır. Lütfen masadaki güncel QR kodu okutunuz.');
+        }
+
+        session([
+            'current_table_id' => $table->id,
+            'current_table_number' => $table->table_number,
+            'current_table_token' => $table->qr_token,
+        ]);
+
+        return redirect()->route('home', ['table' => $table->table_number, 'token' => $table->qr_token]);
+    }
+
+    public function getTableMenuApi(Request $request, string $tableNumber)
+    {
+        $token = $request->query('token');
+        $table = ClubTable::where('table_number', $tableNumber)->first();
+
+        if (!$table) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Belirtilen masa bulunamadı.',
+            ], 404);
+        }
+
+        if (!$table->isTokenValid($token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa QR token süresi dolmuş veya masa kapatılmıştır. Eski bağlantılar reddedilmiştir.',
+            ], 403);
+        }
+
+        $categories = Category::where('is_active', true)
+            ->with(['activeProducts'])
+            ->orderBy('sort_order')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'table' => $table->table_number,
+            'token_expires_at' => $table->token_expires_at ? $table->token_expires_at->toIso8601String() : null,
+            'categories' => $categories,
+        ]);
     }
 
     public function joinTable(Request $request)
@@ -47,6 +92,10 @@ class OrderController extends Controller
             return back()->with('error', 'Belirtilen masa bulunamadı.');
         }
 
+        if ($table->token_expires_at && $table->token_expires_at->isPast()) {
+            return back()->with('error', 'Masaya ait QR oturum süresi dolmuştur. Lütfen yeni QR kod isteyiniz.');
+        }
+
         $guest->update(['club_table_id' => $table->id]);
         session([
             'guest_id' => $guest->id,
@@ -54,15 +103,16 @@ class OrderController extends Controller
             'guest_name' => $guest->name,
             'current_table_id' => $table->id,
             'current_table_number' => $table->table_number,
+            'current_table_token' => $table->qr_token,
         ]);
 
-        return redirect()->route('home', ['table' => $table->table_number])
+        return redirect()->route('home', ['table' => $table->table_number, 'token' => $table->qr_token])
             ->with('success', "Hoş geldiniz {$guest->name}! {$table->table_number} masasına başarıyla bağlandınız.");
     }
 
     public function leaveTable()
     {
-        session()->forget(['guest_id', 'guest_code', 'guest_name']);
+        session()->forget(['guest_id', 'guest_code', 'guest_name', 'current_table_id', 'current_table_number', 'current_table_token']);
         return redirect()->route('home')->with('success', 'Masa oturumunuz kapatıldı.');
     }
 
@@ -90,11 +140,66 @@ class OrderController extends Controller
             ->orWhere('id', session('current_table_id'))
             ->first();
 
-        if (!$table) {
+        if (!$table || !$table->is_active) {
             return response()->json([
                 'success' => false,
-                'message' => 'Masa bilgisi doğrulanamadı.'
+                'message' => 'Masa bilgisi doğrulanamadı veya masa kapalı.'
             ], 400);
+        }
+
+        if ($table->token_expires_at && $table->token_expires_at->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa oturumunun geçerlilik süresi dolmuştur. Lütfen resepsiyondan yeni oturum alınız.'
+            ], 403);
+        }
+
+        if (config('mikale.gps_verification_enabled')) {
+            $userLat = $request->input('latitude');
+            $userLon = $request->input('longitude');
+
+            if ($userLat === null || $userLon === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sipariş verebilmek için konum (GPS) erişimine izin vermeniz gerekmektedir.'
+                ], 403);
+            }
+
+            $venueLat = config('mikale.venue_latitude', 41.042200);
+            $venueLon = config('mikale.venue_longitude', 29.006700);
+            $maxDistance = config('mikale.max_distance_meters', 20.0);
+
+            $distance = $this->calculateDistanceInMeters((float)$userLat, (float)$userLon, $venueLat, $venueLon);
+
+            if ($distance > $maxDistance) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Sipariş reddedildi: Club/restoran sınırları dışındasınız. İzin verilen maksimum mesafe {$maxDistance} metredir (Ölçülen mesafe: " . round($distance, 1) . "m)."
+                ], 403);
+            }
+        }
+
+        if (config('mikale.turnstile.enabled')) {
+            $turnstileToken = $request->input('turnstile_token');
+            $secretKey = config('mikale.turnstile.secret_key');
+
+            if ($turnstileToken && $secretKey && $secretKey !== '1x0000000000000000000000000000000AA') {
+                try {
+                    $verifyResponse = Http::asForm()->timeout(5)->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                        'secret' => $secretKey,
+                        'response' => $turnstileToken,
+                        'remoteip' => $request->ip(),
+                    ]);
+
+                    if (!$verifyResponse->json('success')) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Bot koruması (Cloudflare Turnstile) doğrulaması başarısız oldu.'
+                        ], 403);
+                    }
+                } catch (\Exception $e) {
+                }
+            }
         }
 
         $items = $request->input('items', []);
@@ -140,7 +245,7 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Siparişiniz başarıyla alındı ve barmen / servis ekibine iletildi.',
+            'message' => 'Siparişiniz başarıyla alındı ve servis ekibine iletildi.',
             'order_number' => $orderNumber,
             'total' => number_format($totalAmount, 0, ',', '.') . ' ₺'
         ]);
@@ -169,5 +274,23 @@ class OrderController extends Controller
             'guests' => $activeTableGuests,
             'orders' => $orders
         ]);
+    }
+
+    private function calculateDistanceInMeters(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        $earthRadius = 6371000;
+
+        $latFrom = deg2rad($lat1);
+        $lonFrom = deg2rad($lon1);
+        $latTo = deg2rad($lat2);
+        $lonTo = deg2rad($lon2);
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+            cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+
+        return $angle * $earthRadius;
     }
 }

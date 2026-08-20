@@ -11,7 +11,7 @@
             </div>
             <span class="text-[9px] tracking-[0.3em] uppercase text-[#C5A880] font-medium block">Yalnızca Yetkili Personel Erişimi</span>
             <h2 class="font-lux-title text-xl md:text-2xl text-[#F5EFE6] tracking-wider uppercase">Resepsiyon Portalı</h2>
-            <p class="font-lux-serif italic text-xs text-[#A89C8F]">Kulüp yönetimi, misafir check-in ve canlı sipariş masası</p>
+            <p class="font-lux-serif italic text-xs text-[#A89C8F]">Club yönetimi, misafir check-in ve canlı sipariş masası</p>
             <div class="h-[1px] w-14 mx-auto lux-divider pt-1"></div>
         </div>
 

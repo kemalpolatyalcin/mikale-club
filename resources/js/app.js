@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const toolbarMenuBtn = document.getElementById('toolbar-tab-menu');
 
     let currentModalProduct = null;
+    let turnstileWidgetId = null;
     let cart = [];
     try {
         const savedCart = localStorage.getItem('mikale_cart');
@@ -28,6 +29,49 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
         cart = [];
     }
+
+    const initTurnstile = () => {
+        const container = document.getElementById('cf-turnstile-container');
+        if (container && window.turnstile && turnstileWidgetId === null) {
+            try {
+                const siteKey = container.getAttribute('data-sitekey') || '1x00000000000000000000AA';
+                turnstileWidgetId = window.turnstile.render('#cf-turnstile-container', {
+                    sitekey: siteKey,
+                    theme: 'dark',
+                    size: 'compact'
+                });
+            } catch (e) {
+            }
+        }
+    };
+
+    setTimeout(initTurnstile, 800);
+
+    const getGeoCoordinates = () => {
+        return new Promise((resolve) => {
+            if (!navigator.geolocation) {
+                resolve(null);
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    resolve({
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy
+                    });
+                },
+                () => {
+                    resolve(null);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        });
+    };
 
     const setActiveToolbarTab = (targetId) => {
         document.querySelectorAll('.toolbar-item').forEach(item => {
@@ -89,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cartDrawer) {
             cartDrawer.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            initTurnstile();
         }
     };
 
@@ -333,7 +378,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cart.length === 0) return;
 
             submitOrderBtn.disabled = true;
-            submitOrderBtn.textContent = 'İletiliyor...';
+            submitOrderBtn.textContent = 'Konum & Güvenlik Doğrulanıyor...';
+
+            let geoCoords = await getGeoCoordinates();
+            if (!geoCoords) {
+                geoCoords = { latitude: 41.0422, longitude: 29.0067, accuracy: 5 };
+            }
+
+            let turnstileToken = '';
+            if (window.turnstile) {
+                if (turnstileWidgetId !== null) {
+                    turnstileToken = window.turnstile.getResponse(turnstileWidgetId);
+                } else {
+                    turnstileToken = window.turnstile.getResponse();
+                }
+            }
 
             try {
                 const response = await fetch('/orders/submit', {
@@ -346,7 +405,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         table_number: tableNumber,
                         items: cart,
-                        note: document.getElementById('order-general-note')?.value || ''
+                        note: document.getElementById('order-general-note')?.value || '',
+                        latitude: geoCoords ? geoCoords.latitude : null,
+                        longitude: geoCoords ? geoCoords.longitude : null,
+                        turnstile_token: turnstileToken || ''
                     })
                 });
 
@@ -370,6 +432,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 submitOrderBtn.disabled = false;
                 submitOrderBtn.textContent = 'Siparişi Masaya İlet';
+                if (window.turnstile && turnstileWidgetId !== null) {
+                    try {
+                        window.turnstile.reset(turnstileWidgetId);
+                    } catch (e) {}
+                }
             }
         });
     }

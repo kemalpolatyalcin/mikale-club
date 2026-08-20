@@ -4,10 +4,10 @@
 
 @section('content')
 @if(isset($dailySpecials) && $dailySpecials->count() > 0)
-    <div id="specials-welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="specials-welcome-overlay" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
         <div id="welcome-backdrop" class="fixed inset-0 bg-[#070605]/90 modal-backdrop transition-opacity"></div>
-        <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-2xl max-w-xl w-full p-6 md:p-8 shadow-2xl shadow-black z-10 overlay-content-in space-y-5">
-            <button id="welcome-close-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] hover:text-white flex items-center justify-center transition-colors">
+        <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-xl w-full p-5 sm:p-6 md:p-8 shadow-2xl shadow-black z-10 overlay-content-in space-y-4 max-h-[90vh] overflow-y-auto hide-scrollbar">
+            <button id="welcome-close-btn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] hover:text-white flex items-center justify-center active:scale-90 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -25,16 +25,16 @@
 
             <div class="space-y-3">
                 @foreach($dailySpecials as $special)
-                    <div class="specials-card rounded-xl p-4 flex flex-col justify-between open-product-modal cursor-pointer"
+                    <div class="specials-card rounded-2xl p-4 flex flex-col justify-between open-product-modal cursor-pointer active:scale-[0.99] transition-all"
                          data-id="{{ $special->id }}"
-                         data-name="{{ $special->name }}"
-                         data-subtitle="{{ $special->sub_title }}"
-                         data-desc="{{ $special->description }}"
-                         data-notes="{{ $special->taste_notes }}"
+                         data-name="{{ htmlspecialchars($special->name, ENT_QUOTES, 'UTF-8') }}"
+                         data-subtitle="{{ htmlspecialchars($special->sub_title ?? '', ENT_QUOTES, 'UTF-8') }}"
+                         data-desc="{{ htmlspecialchars($special->description ?? '', ENT_QUOTES, 'UTF-8') }}"
+                         data-notes="{{ htmlspecialchars($special->taste_notes ?? '', ENT_QUOTES, 'UTF-8') }}"
                          data-price="{{ $special->formatted_price }}"
                          data-raw-price="{{ $special->price }}"
                          data-orig-price="{{ $special->original_price ? number_format($special->original_price, 0, ',', '.') . ' ₺' : '' }}"
-                         data-badge="{{ $special->badge ?? 'SPECIAL' }}"
+                         data-badge="{{ htmlspecialchars($special->badge ?? 'SPECIAL', ENT_QUOTES, 'UTF-8') }}"
                          data-abv="{{ $special->alcohol_percentage }}"
                          data-vol="{{ $special->volume_ml }}">
                         
@@ -117,8 +117,8 @@
 
     <div class="mb-10 reveal-up">
         <div class="relative max-w-md mx-auto">
-            <input type="text" id="menu-search" placeholder="İçerik, kokteyl veya tat notası ara..." 
-                   class="w-full bg-[#161412]/90 border border-[#C5A880]/25 rounded-full px-5 py-2.5 pl-10 text-xs md:text-sm text-[#E6E0D8] placeholder-[#7A7166] focus:outline-none focus:border-[#C5A880]/60 focus:ring-1 focus:ring-[#C5A880]/30 transition-all shadow-inner">
+            <input type="text" id="menu-search" 
+                   class="w-full bg-[#161412]/90 border border-[#C5A880]/25 rounded-full px-5 py-2.5 pl-10 text-xs md:text-sm text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60 focus:ring-1 focus:ring-[#C5A880]/30 transition-all shadow-inner">
             <svg class="w-4 h-4 text-[#C5A880]/60 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
@@ -137,16 +137,16 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($dailySpecials as $special)
-                    <div class="specials-card rounded-xl p-5 relative flex flex-col justify-between open-product-modal cursor-pointer"
+                    <div class="specials-card rounded-2xl p-4 sm:p-5 relative flex flex-col justify-between open-product-modal cursor-pointer active:scale-[0.99] transition-all"
                          data-id="{{ $special->id }}"
-                         data-name="{{ $special->name }}"
-                         data-subtitle="{{ $special->sub_title }}"
-                         data-desc="{{ $special->description }}"
-                         data-notes="{{ $special->taste_notes }}"
+                         data-name="{{ htmlspecialchars($special->name, ENT_QUOTES, 'UTF-8') }}"
+                         data-subtitle="{{ htmlspecialchars($special->sub_title ?? '', ENT_QUOTES, 'UTF-8') }}"
+                         data-desc="{{ htmlspecialchars($special->description ?? '', ENT_QUOTES, 'UTF-8') }}"
+                         data-notes="{{ htmlspecialchars($special->taste_notes ?? '', ENT_QUOTES, 'UTF-8') }}"
                          data-price="{{ $special->formatted_price }}"
                          data-raw-price="{{ $special->price }}"
                          data-orig-price="{{ $special->original_price ? number_format($special->original_price, 0, ',', '.') . ' ₺' : '' }}"
-                         data-badge="{{ $special->badge ?? 'SPECIAL' }}"
+                         data-badge="{{ htmlspecialchars($special->badge ?? 'SPECIAL', ENT_QUOTES, 'UTF-8') }}"
                          data-abv="{{ $special->alcohol_percentage }}"
                          data-vol="{{ $special->volume_ml }}">
                         
@@ -184,7 +184,7 @@
                                 <span class="text-[9px]">✦</span>
                                 <span class="font-lux-serif italic truncate text-[#E8D9C5]">{{ $special->taste_notes }}</span>
                             </div>
-                            <button data-id="{{ $special->id }}" data-name="{{ $special->name }}" data-price="{{ $special->price }}" class="quick-add-btn px-2.5 py-1 rounded-full bg-[#C5A880] text-[#0D0C0A] text-[9px] uppercase font-bold tracking-wider hover:brightness-110 transition-all flex-shrink-0 ml-2">
+                            <button data-id="{{ $special->id }}" data-name="{{ htmlspecialchars($special->name, ENT_QUOTES, 'UTF-8') }}" data-price="{{ $special->price }}" class="quick-add-btn px-3 py-1.5 rounded-full bg-[#C5A880] text-[#0D0C0A] text-[10px] uppercase font-bold tracking-wider hover:brightness-110 active:scale-90 touch-manipulation transition-all flex-shrink-0 ml-2 shadow-sm">
                                 + Ekle
                             </button>
                         </div>
@@ -194,12 +194,12 @@
         </div>
     @endif
 
-    <div class="sticky top-[57px] z-30 -mx-4 px-4 py-3 bg-[#0D0C0A]/95 backdrop-blur-xl border-y border-[#C5A880]/15 mb-10 overflow-x-auto hide-scrollbar">
+    <div class="sticky top-[56px] z-30 -mx-4 px-4 py-2.5 bg-[#0D0C0A]/95 backdrop-blur-xl border-y border-[#C5A880]/15 mb-8 overflow-x-auto hide-scrollbar touch-pan-x">
         <div class="flex items-center gap-2 min-w-max mx-auto max-w-4xl justify-start md:justify-center">
             @foreach($categories as $idx => $cat)
                 <a href="#cat-{{ $cat->slug }}" 
                    data-target="cat-{{ $cat->slug }}"
-                   class="category-nav-btn px-4 py-1.5 rounded-full text-[11px] uppercase tracking-wider transition-all duration-300 whitespace-nowrap border {{ $idx === 0 ? 'bg-[#C5A880] text-[#0D0C0A] border-[#C5A880] font-medium shadow-md shadow-[#C5A880]/20' : 'bg-[#181614] text-[#A89C8F] border-[#C5A880]/20 hover:text-[#F5EFE6] hover:border-[#C5A880]/40' }}">
+                   class="category-nav-btn px-4 py-1.5 rounded-full text-[11px] uppercase tracking-wider transition-all duration-300 whitespace-nowrap border active:scale-95 touch-manipulation {{ $idx === 0 ? 'bg-[#C5A880] text-[#0D0C0A] border-[#C5A880] font-medium shadow-md shadow-[#C5A880]/20' : 'bg-[#181614] text-[#A89C8F] border-[#C5A880]/20 hover:text-[#F5EFE6] hover:border-[#C5A880]/40' }}">
                     {{ $cat->name }}
                 </a>
             @endforeach
@@ -223,16 +223,16 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 md:gap-4">
                     @foreach($category->activeProducts as $pIndex => $product)
-                        <div class="product-card lux-card rounded-xl p-4 relative flex flex-col justify-between open-product-modal cursor-pointer {{ $pIndex % 2 == 0 ? 'reveal-left' : 'reveal-right' }}"
+                        <div class="product-card lux-card rounded-2xl p-4 relative flex flex-col justify-between open-product-modal cursor-pointer active:scale-[0.99] transition-all {{ $pIndex % 2 == 0 ? 'reveal-left' : 'reveal-right' }}"
                              data-id="{{ $product->id }}"
-                             data-name="{{ $product->name }}"
-                             data-subtitle="{{ $product->sub_title }}"
-                             data-desc="{{ $product->description }}"
-                             data-notes="{{ $product->taste_notes }}"
+                             data-name="{{ htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') }}"
+                             data-subtitle="{{ htmlspecialchars($product->sub_title ?? '', ENT_QUOTES, 'UTF-8') }}"
+                             data-desc="{{ htmlspecialchars($product->description ?? '', ENT_QUOTES, 'UTF-8') }}"
+                             data-notes="{{ htmlspecialchars($product->taste_notes ?? '', ENT_QUOTES, 'UTF-8') }}"
                              data-price="{{ $product->formatted_price }}"
                              data-raw-price="{{ $product->price }}"
                              data-orig-price="{{ $product->original_price ? number_format($product->original_price, 0, ',', '.') . ' ₺' : '' }}"
-                             data-badge="{{ $product->badge }}"
+                             data-badge="{{ htmlspecialchars($product->badge ?? '', ENT_QUOTES, 'UTF-8') }}"
                              data-abv="{{ $product->alcohol_percentage }}"
                              data-vol="{{ $product->volume_ml }}">
                             
@@ -261,7 +261,7 @@
                                 </div>
 
                                 @if($product->description)
-                                    <p class="text-[11px] text-[#A89C8F] font-light leading-relaxed mb-2">
+                                    <p class="text-[11px] text-[#A89C8F] font-light leading-relaxed mb-2 line-clamp-3">
                                         {{ $product->description }}
                                     </p>
                                 @endif
@@ -272,7 +272,7 @@
                                     <span class="text-[#C5A880] text-[9px]">✦</span>
                                     <span class="font-lux-serif italic truncate text-[#A89C8F]">{{ $product->taste_notes }}</span>
                                 </div>
-                                <button data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}" class="quick-add-btn px-2.5 py-1 rounded-full bg-[#1F1B16] border border-[#C5A880]/40 text-[#C5A880] text-[9px] uppercase font-bold tracking-wider hover:bg-[#C5A880] hover:text-[#0D0C0A] transition-all flex-shrink-0 ml-1">
+                                <button data-id="{{ $product->id }}" data-name="{{ htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') }}" data-price="{{ $product->price }}" class="quick-add-btn px-3 py-1 rounded-full bg-[#1F1B16] border border-[#C5A880]/40 text-[#C5A880] text-[9px] uppercase font-bold tracking-wider hover:bg-[#C5A880] hover:text-[#0D0C0A] active:scale-90 touch-manipulation transition-all flex-shrink-0 ml-1">
                                     + Ekle
                                 </button>
                             </div>
@@ -284,28 +284,28 @@
     </div>
 </div>
 
-<div id="cart-drawer" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+<div id="cart-drawer" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 hidden">
     <div id="cart-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
-    <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4 max-h-[85vh] flex flex-col justify-between">
+    <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4 max-h-[92vh] flex flex-col justify-between overflow-y-auto hide-scrollbar">
         <div>
             <div class="flex items-center justify-between border-b border-[#C5A880]/20 pb-3 mb-3">
                 <div>
                     <span class="text-[9px] uppercase tracking-widest text-[#C5A880] font-medium block">Masa Siparişi</span>
                     <h3 class="font-lux-title text-lg text-[#F5EFE6]">Masa Sepetim</h3>
                 </div>
-                <button id="close-cart-btn" class="w-8 h-8 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center hover:text-white">
+                <button id="close-cart-btn" class="w-9 h-9 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center active:scale-90 hover:text-white transition-all">
                     ✕
                 </button>
             </div>
 
-            <div id="cart-items-container" class="space-y-2.5 overflow-y-auto max-h-[38vh] pr-1 hide-scrollbar"></div>
+            <div id="cart-items-container" class="space-y-2.5 overflow-y-auto max-h-[35vh] sm:max-h-[40vh] pr-1 hide-scrollbar"></div>
         </div>
 
         <div class="space-y-3 pt-3 border-t border-[#C5A880]/20">
             <div>
                 <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Garson / Barmen Özel Notu</label>
                 <input type="text" id="order-general-note" 
-                       class="w-full bg-[#1B1814] border border-[#C5A880]/20 rounded-xl px-3.5 py-2 text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60">
+                       class="w-full bg-[#1B1814] border border-[#C5A880]/20 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60">
             </div>
 
             <div class="flex items-baseline justify-between py-1">
@@ -313,12 +313,14 @@
                 <span id="cart-drawer-total" class="font-lux-title text-xl font-bold text-[#E8D9C5]">0 ₺</span>
             </div>
 
+            <div id="cf-turnstile-container" class="flex justify-center my-1" data-sitekey="{{ config('mikale.turnstile.site_key') }}"></div>
+
             @if(session('guest_id'))
-                <button id="submit-order-btn" data-table="{{ $activeTable->table_number ?? 'T-01' }}" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.99] transition-all shadow-lg shadow-[#C5A880]/25">
+                <button id="submit-order-btn" data-table="{{ $activeTable->table_number ?? 'T-01' }}" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.98] touch-manipulation transition-all shadow-lg shadow-[#C5A880]/25">
                     Siparişi Masaya İlet
                 </button>
             @else
-                <button class="open-join-table-btn w-full py-3.5 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all">
+                <button class="open-join-table-btn w-full py-3.5 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.98] touch-manipulation transition-all">
                     Sipariş İçin VIP Kodunuzla Giriş Yapın
                 </button>
             @endif
@@ -326,10 +328,10 @@
     </div>
 </div>
 
-<div id="join-table-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+<div id="join-table-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 hidden">
     <div id="join-modal-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
-    <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4">
-        <button id="close-join-modal-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center hover:text-white">
+    <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4 max-h-[92vh] overflow-y-auto hide-scrollbar">
+        <button id="close-join-modal-btn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center active:scale-90 hover:text-white transition-all">
             ✕
         </button>
 
@@ -343,27 +345,27 @@
             @csrf
             <div>
                 <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Masa Numarası *</label>
-                <input type="text" name="table_number" value="{{ $activeTable->table_number ?? 'VIP-01' }}" required 
-                       class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-2.5 text-xs text-center font-mono uppercase text-[#E8D9C5] focus:outline-none focus:border-[#C5A880]">
+                <input type="text" name="table_number" value="{{ $activeTable->table_number ?? '' }}" required 
+                       class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-2.5 text-base sm:text-xs text-center font-mono uppercase text-[#E8D9C5] focus:outline-none focus:border-[#C5A880]">
             </div>
 
             <div>
                 <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Resepsiyon VIP Misafir Kodunuz *</label>
                 <input type="text" name="guest_code" required 
-                       class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-3 text-sm text-center font-mono uppercase text-[#F5EFE6] tracking-widest focus:outline-none focus:border-[#C5A880]">
+                       class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-3 text-base sm:text-sm text-center font-mono uppercase text-[#F5EFE6] tracking-widest focus:outline-none focus:border-[#C5A880]">
             </div>
 
-            <button type="submit" class="w-full py-3 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 transition-all shadow-md shadow-[#C5A880]/20">
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.98] touch-manipulation transition-all shadow-md shadow-[#C5A880]/20">
                 Masaya Katıl & Siparişe Başla
             </button>
         </form>
     </div>
 </div>
 
-<div id="product-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+<div id="product-detail-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 hidden">
     <div id="modal-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
-    <div class="relative bg-[#161411] border border-[#C5A880]/35 rounded-3xl max-w-lg w-full p-6 md:p-7 shadow-2xl shadow-black/80 z-10 modal-content-in space-y-4 max-h-[85vh] overflow-y-auto hide-scrollbar">
-        <button id="modal-close-btn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#201C18] border border-[#C5A880]/30 text-[#C5A880] hover:text-white flex items-center justify-center transition-colors">
+    <div class="relative bg-[#161411] border border-[#C5A880]/35 rounded-3xl max-w-lg w-full p-5 sm:p-6 md:p-7 shadow-2xl shadow-black/80 z-10 modal-content-in space-y-4 max-h-[92vh] overflow-y-auto hide-scrollbar">
+        <button id="modal-close-btn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#201C18] border border-[#C5A880]/30 text-[#C5A880] hover:text-white flex items-center justify-center active:scale-90 transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -402,8 +404,8 @@
 
         <div class="pt-2 space-y-2">
             <input type="text" id="modal-order-note" 
-                   class="w-full bg-[#141210] border border-[#C5A880]/20 rounded-xl px-3.5 py-2 text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60">
-            <button id="modal-add-to-cart-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.99] transition-all shadow-md shadow-[#C5A880]/20">
+                   class="w-full bg-[#141210] border border-[#C5A880]/20 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]/60">
+            <button id="modal-add-to-cart-btn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.98] touch-manipulation transition-all shadow-md shadow-[#C5A880]/20">
                 Sepete Ekle
             </button>
         </div>

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [MenuController::class, 'index'])->name('home');
 Route::get('/menu', [MenuController::class, 'index'])->name('menu');
 Route::get('/table/{token}', [OrderController::class, 'showTable'])->name('table.show');
+Route::get('/api/menu/{tableNumber}', [OrderController::class, 'getTableMenuApi'])->name('api.table.menu');
 
 Route::post('/table/join', [OrderController::class, 'joinTable'])->name('table.join');
 Route::post('/table/leave', [OrderController::class, 'leaveTable'])->name('table.leave');
