@@ -2,8 +2,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 SET time_zone = '+03:00';
 
-CREATE DATABASE IF NOT EXISTS `mikale_club` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `mikale_club`;
+CREATE DATABASE IF NOT EXISTS `mikale_club_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `mikale_club_db`;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -164,6 +164,7 @@ CREATE TABLE `club_tables` (
   `qr_token` varchar(64) NOT NULL,
   `token_expires_at` timestamp NULL DEFAULT NULL,
   `status` varchar(50) NOT NULL DEFAULT 'available',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `current_guest_count` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
