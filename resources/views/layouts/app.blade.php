@@ -83,6 +83,14 @@
                     <span class="text-[9px] tracking-wider font-medium mt-0.5 whitespace-nowrap">Masaya Katıl</span>
                 </button>
 
+                <button type="button" id="toolbar-tab-waiter" 
+                        class="toolbar-item open-waiter-modal-btn-trigger flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-full text-[#A89C8F] hover:text-[#E8D9C5] border border-transparent transition-all duration-300 active:scale-90">
+                    <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span class="text-[9px] tracking-wider font-medium mt-0.5 whitespace-nowrap">Garson Çağır</span>
+                </button>
+
                 <button type="button" id="toolbar-tab-cart" 
                         class="toolbar-item open-cart-btn-trigger flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-full text-[#A89C8F] hover:text-[#E8D9C5] border border-transparent transition-all duration-300 active:scale-90">
                     <div class="relative">
@@ -102,6 +110,99 @@
                     <span class="text-[9px] tracking-wider font-medium mt-0.5">Resepsiyon</span>
                 </a>
             </nav>
+        </div>
+
+        <div id="waiter-call-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 hidden">
+            <div id="waiter-modal-backdrop" class="fixed inset-0 bg-black/85 modal-backdrop transition-opacity"></div>
+            <div class="relative bg-[#14120F] border border-[#C5A880]/40 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl shadow-black z-10 modal-content-in space-y-4 max-h-[92vh] overflow-y-auto hide-scrollbar">
+                <button id="close-waiter-modal-btn" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[#C5A880] flex items-center justify-center active:scale-90 hover:text-white transition-all">
+                    ✕
+                </button>
+
+                <div class="text-center space-y-1">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#1F1B16] border border-[#C5A880]/30 text-[9px] font-medium text-[#C5A880] uppercase tracking-[0.2em]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#C5A880] animate-ping"></span>
+                        <span>Direct Service Alert</span>
+                    </div>
+                    <h3 class="font-lux-title text-xl text-[#F5EFE6]">Garson & Servis Çağır</h3>
+                    <p class="font-lux-serif italic text-xs text-[#A89C8F]">Talebinizi seçin, servis ekibimiz anında masanıza yönlendirilsin.</p>
+                </div>
+
+                @if(session('guest_id'))
+                    <div class="space-y-3 pt-2">
+                        <div class="p-3 rounded-2xl bg-[#1B1814] border border-[#C5A880]/30 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <div>
+                                    <span class="text-[9px] uppercase tracking-wider text-[#A89C8F] block">Masa Numarası</span>
+                                    <span class="font-mono text-sm font-bold text-[#F5EFE6]">{{ session('current_table_number') ?? 'Masa' }}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[9px] uppercase tracking-wider text-[#A89C8F] block">Aktif Misafir</span>
+                                <span class="text-xs font-semibold text-[#E8D9C5]">{{ session('guest_name') }} <span class="font-mono text-[#C5A880]">[{{ session('guest_code') }}]</span></span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1.5">Çağrı Talebi Türü</label>
+                            <div class="grid grid-cols-2 gap-2" id="waiter-call-type-options">
+                                <button type="button" data-call-type="waiter" class="waiter-type-pill active bg-[#C5A880] text-[#0D0C0A] border-[#C5A880] font-semibold p-2.5 rounded-xl border text-xs flex items-center gap-2 transition-all">
+                                    <span>🛎️</span>
+                                    <span class="text-[11px]">Garson Masaya</span>
+                                </button>
+                                <button type="button" data-call-type="bill" class="waiter-type-pill bg-[#1B1814] text-[#A89C8F] border-[#C5A880]/20 hover:border-[#C5A880]/40 p-2.5 rounded-xl border text-xs flex items-center gap-2 transition-all">
+                                    <span>💳</span>
+                                    <span class="text-[11px]">Hesap & Adisyon</span>
+                                </button>
+                                <button type="button" data-call-type="ice" class="waiter-type-pill bg-[#1B1814] text-[#A89C8F] border-[#C5A880]/20 hover:border-[#C5A880]/40 p-2.5 rounded-xl border text-xs flex items-center gap-2 transition-all">
+                                    <span>🧊</span>
+                                    <span class="text-[11px]">Buz & Bardak</span>
+                                </button>
+                                <button type="button" data-call-type="ashtray" class="waiter-type-pill bg-[#1B1814] text-[#A89C8F] border-[#C5A880]/20 hover:border-[#C5A880]/40 p-2.5 rounded-xl border text-xs flex items-center gap-2 transition-all">
+                                    <span>🚬</span>
+                                    <span class="text-[11px]">Kül Tablası</span>
+                                </button>
+                                <button type="button" data-call-type="hookah" class="waiter-type-pill bg-[#1B1814] text-[#A89C8F] border-[#C5A880]/20 hover:border-[#C5A880]/40 p-2.5 rounded-xl border text-xs flex items-center gap-2 transition-all">
+                                    <span>💨</span>
+                                    <span class="text-[11px]">Köz Yenileme</span>
+                                </button>
+                                <button type="button" data-call-type="custom" class="waiter-type-pill bg-[#1B1814] text-[#A89C8F] border-[#C5A880]/20 hover:border-[#C5A880]/40 p-2.5 rounded-xl border text-xs flex items-center gap-2 transition-all">
+                                    <span>✍️</span>
+                                    <span class="text-[11px]">Özel İstek</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-[#A89C8F] mb-1">Ekstra Not (Opsiyonel)</label>
+                            <input type="text" id="waiter-call-note" 
+                                   class="w-full bg-[#1B1814] border border-[#C5A880]/30 rounded-xl px-4 py-2.5 text-base sm:text-xs text-[#E6E0D8] focus:outline-none focus:border-[#C5A880]">
+                        </div>
+
+                        <button type="button" id="submit-waiter-call-btn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#8F7655] via-[#C5A880] to-[#8F7655] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.98] touch-manipulation transition-all shadow-lg shadow-[#C5A880]/25 flex items-center justify-center gap-2">
+                            <span>🛎️</span>
+                            <span>Çağrıyı Personele İlet</span>
+                        </button>
+                    </div>
+                @else
+                    <div class="space-y-4 pt-4 text-center">
+                        <div class="w-14 h-14 rounded-full bg-[#1B1814] border border-[#C5A880]/40 text-[#C5A880] flex items-center justify-center mx-auto text-2xl shadow-inner">
+                            🔒
+                        </div>
+                        <div class="space-y-1">
+                            <h4 class="font-lux-title text-base text-[#F5EFE6]">Masa Oturumu Gerekli</h4>
+                            <p class="font-lux-serif italic text-xs text-[#A89C8F] max-w-xs mx-auto">
+                                Garson çağırabilmek ve servis talebinde bulunabilmek için lütfen resepsiyondan verilen VIP Misafir Kodunuz ile masaya giriş yapınız.
+                            </p>
+                        </div>
+                        <button type="button" id="waiter-need-login-btn" class="w-full py-3.5 rounded-xl bg-[#C5A880] text-[#0D0C0A] font-lux-title text-xs tracking-[0.2em] uppercase font-bold hover:brightness-110 active:scale-[0.98] touch-manipulation transition-all shadow-md shadow-[#C5A880]/20 flex items-center justify-center gap-2">
+                            <span>🔑</span>
+                            <span>VIP Kodunuzla Masaya Giriş Yapın</span>
+                        </button>
+                    </div>
+                @endif
+            </div>
         </div>
     @endif
 

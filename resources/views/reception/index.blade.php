@@ -71,6 +71,16 @@
                         <span>Masalar ve QR</span>
                     </button>
 
+                    <button type="button" data-tab="notifications" class="portal-nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all font-semibold {{ ($tab ?? '') === 'notifications' ? 'bg-[#8F6E40] text-white shadow-md' : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]' }}">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <span>Garson Bildirimleri</span>
+                        </div>
+                        <span id="nav-waiter-badge" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold {{ $pendingWaiterCallsCount > 0 ? 'bg-red-500 text-white animate-bounce' : 'bg-[#E2E8F0] text-[#64748B]' }}">{{ $pendingWaiterCallsCount }}</span>
+                    </button>
+
                     <button type="button" data-tab="orders" class="portal-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all font-semibold {{ ($tab ?? '') === 'orders' ? 'bg-[#8F6E40] text-white shadow-md' : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]' }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
@@ -83,6 +93,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
                         <span>Kasa ve Hesaplar</span>
+                    </button>
+
+                    <button type="button" data-tab="settings" class="portal-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs transition-all font-semibold {{ ($tab ?? '') === 'settings' ? 'bg-[#8F6E40] text-white shadow-md' : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A]' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Ayarlar & Hesap</span>
                     </button>
                 </nav>
             </div>
@@ -124,6 +142,13 @@
             </div>
 
             <div class="flex items-center gap-2 md:gap-3">
+                <button type="button" onclick="switchPortalTab('notifications')" class="relative p-2 rounded-xl bg-[#F8F9FA] hover:bg-[#E2E8F0] border border-[#CBD5E1] text-[#0F172A] transition-all flex items-center justify-center shadow-sm" title="Garson & Sipariş Bildirimleri">
+                    <svg class="w-4 h-4 text-[#8F6E40]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span id="header-waiter-badge" class="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold {{ $pendingWaiterCallsCount > 0 ? 'bg-red-500 text-white animate-pulse' : 'hidden' }}">{{ $pendingWaiterCallsCount }}</span>
+                </button>
+
                 <div class="relative hidden sm:block">
                     <input type="text" id="portal-live-search" 
                            class="bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-3 py-1.5 text-xs text-[#0F172A] focus:outline-none focus:border-[#8F6E40] w-36 md:w-48 transition-all">
@@ -646,6 +671,122 @@
                 </div>
             </section>
 
+            <section id="section-notifications" class="portal-tab-content {{ ($tab ?? '') === 'notifications' ? '' : 'hidden' }} space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                            <h3 class="font-lux-title text-base font-bold text-[#0F172A]">Garson & Sipariş Bildirimleri (Canlı)</h3>
+                        </div>
+                        <span class="text-xs text-[#64748B]">Masalardan gelen anlık servis çağrıları ve yeni siparişler tüm detaylarıyla burada listelenir</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] text-[10px] text-[#16A34A] font-semibold font-mono whitespace-nowrap flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Otomatik Canlı Takip: Açık</span>
+                        </span>
+                        <form action="{{ route('reception.waiter_call.clear_all') }}" method="POST" onsubmit="return confirm('Tüm bekleyen bildirimler tamamlandı olarak işaretlensin mi?')">
+                            @csrf
+                            <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-[#F8F9FA] hover:bg-[#E2E8F0] border border-[#CBD5E1] text-[#0F172A] text-xs font-semibold transition-all">
+                                Tümünü Tamamla
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="portal-notifications-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @forelse($waiterCalls as $call)
+                        <div class="waiter-call-card bg-[#FFFFFF] border {{ $call->status === 'pending' ? 'border-[#8F6E40]/60 ring-2 ring-[#8F6E40]/20' : 'border-[#E2E8F0]' }} rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3"
+                             data-id="{{ $call->id }}"
+                             data-search="{{ strtolower($call->table_number . ' ' . ($call->guest_name ?? '') . ' ' . $call->title . ' ' . ($call->message ?? '')) }}">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-1.5">
+                                        @if($call->type === 'order')
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">🛒 SİPARİŞ</span>
+                                        @elseif($call->type === 'bill')
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">💳 HESAP İSTEĞİ</span>
+                                        @elseif($call->type === 'ice')
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]">🧊 BUZ & BARDAK</span>
+                                        @elseif($call->type === 'ashtray')
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#F8FAFC] text-[#475569] border border-[#E2E8F0]">🚬 KÜL TABLASI</span>
+                                        @elseif($call->type === 'hookah')
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#FAF5FF] text-[#7E22CE] border border-[#E9D5FF]">💨 KÖZ YENİLEME</span>
+                                        @else
+                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]">🛎️ GARSON ÇAĞRISI</span>
+                                        @endif
+                                        <span class="font-mono text-xs font-bold text-[#0F172A]">{{ $call->table_number }}</span>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono {{ $call->status === 'pending' ? 'bg-red-50 text-red-600 border border-red-200 animate-pulse' : 'bg-emerald-50 text-emerald-600 border border-emerald-200' }}">
+                                        {{ $call->status === 'pending' ? 'BEKLİYOR' : 'TAMAMLANDI' }}
+                                    </span>
+                                </div>
+
+                                <h4 class="font-lux-title text-sm font-bold text-[#0F172A]">{{ $call->title }}</h4>
+                                <div class="flex items-center gap-2 text-[11px] text-[#64748B] mb-2">
+                                    @if($call->guest_name)
+                                        <span class="font-medium text-[#334155]">👤 {{ $call->guest_name }}</span>
+                                    @endif
+                                    @if($call->guest_code)
+                                        <span class="font-mono font-bold text-[#8F6E40]">[{{ $call->guest_code }}]</span>
+                                    @endif
+                                    <span>• {{ $call->created_at ? $call->created_at->diffForHumans() : '' }}</span>
+                                </div>
+
+                                @if($call->message)
+                                    <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs text-[#334155] mb-2">
+                                        <span class="text-[10px] uppercase font-bold text-[#64748B] block mb-0.5">Misafir Notu:</span>
+                                        {{ $call->message }}
+                                    </div>
+                                @endif
+
+                                @if(!empty($call->order_items))
+                                    <div class="border border-[#F1F5F9] rounded-xl p-2.5 bg-[#FAFBFD] space-y-1.5 mb-2">
+                                        <span class="text-[10px] uppercase font-bold text-[#64748B] block mb-1">Sipariş İçeriği:</span>
+                                        @foreach($call->order_items as $item)
+                                            <div class="flex items-center justify-between text-xs py-0.5 border-b border-[#F1F5F9] last:border-0">
+                                                <div class="flex items-center gap-1.5 truncate">
+                                                    <span class="font-bold text-[#8F6E40]">{{ $item['quantity'] ?? 1 }}x</span>
+                                                    <span class="text-[#1E293B] truncate">{{ $item['name'] ?? '' }}</span>
+                                                </div>
+                                                <span class="font-mono font-semibold text-[#0F172A] text-xs flex-shrink-0 ml-2">
+                                                    {{ number_format($item['total'] ?? ($item['price'] ?? 0), 0, ',', '.') }} ₺
+                                                </span>
+                                            </div>
+                                        @endforeach
+                                        @if($call->total_amount)
+                                            <div class="pt-1.5 mt-1 border-t border-[#E2E8F0] flex items-center justify-between font-bold text-xs">
+                                                <span class="text-[#0F172A]">Toplam Tutar:</span>
+                                                <span class="font-mono text-[#8F6E40]">{{ number_format($call->total_amount, 0, ',', '.') }} ₺</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="pt-2 border-t border-[#F1F5F9] flex items-center gap-2">
+                                <form action="{{ route('reception.waiter_call.status', $call) }}" method="POST" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="status" value="{{ $call->status === 'pending' ? 'completed' : 'pending' }}">
+                                    <button type="submit" class="w-full py-1.5 px-2 rounded-lg {{ $call->status === 'pending' ? 'bg-[#DCFCE7] hover:bg-[#BBF7D0] border border-[#BBF7D0] text-[#16A34A]' : 'bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#CBD5E1] text-[#475569]' }} text-xs font-bold transition-all">
+                                        {{ $call->status === 'pending' ? '✓ Tamamlandı' : '↺ Beklet' }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('reception.waiter_call.delete', $call) }}" method="POST" onsubmit="return confirm('Bildirimi silmek istediğinize emin misiniz?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 rounded-lg bg-[#FEF2F2] hover:bg-[#FEE2E2] border border-[#FECACA] text-[#DC2626] text-xs font-bold transition-all" title="Sil">
+                                        ✕
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-3 text-center py-12 text-[#94A3B8] text-xs bg-[#FFFFFF] rounded-2xl border border-[#E2E8F0]">Henüz bekleyen garson çağrısı veya sipariş bildirimi bulunmuyor.</div>
+                    @endforelse
+                </div>
+            </section>
+
             <section id="section-orders" class="portal-tab-content {{ ($tab ?? '') === 'orders' ? '' : 'hidden' }} space-y-6">
                 <div class="flex items-center justify-between bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
                     <div>
@@ -762,6 +903,78 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </section>
+
+            <section id="section-settings" class="portal-tab-content {{ ($tab ?? '') === 'settings' ? '' : 'hidden' }} space-y-6">
+                <div class="flex items-center justify-between bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
+                    <div>
+                        <h3 class="font-lux-title text-base font-bold text-[#0F172A]">Yönetici Hesap ve Güvenlik Ayarları</h3>
+                        <span class="text-xs text-[#64748B]">Portal giriş e-posta adresinizi ve şifrenizi buradan güncelleyebilirsiniz</span>
+                    </div>
+                </div>
+
+                <div class="max-w-2xl bg-[#FFFFFF] border border-[#E2E8F0] rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                    <form action="{{ route('reception.settings.update') }}" method="POST" class="space-y-5">
+                        @csrf
+
+                        <div class="flex items-center gap-3 p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                            <div class="w-12 h-12 rounded-2xl bg-[#8F6E40]/10 border border-[#8F6E40]/20 flex items-center justify-center text-xl font-bold text-[#8F6E40]">
+                                👤
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-[#64748B] block tracking-wider">Aktif Giriş E-posta</span>
+                                <span class="font-mono text-sm font-bold text-[#0F172A]">{{ Auth::user()->email ?? 'club@gmail.com' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-[#475569] mb-1.5">Giriş E-posta Adresi *</label>
+                                <input type="email" name="email" value="{{ old('email', Auth::user()->email ?? 'club@gmail.com') }}" required 
+                                       class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40] transition-all">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-[#475569] mb-1.5">Görünen Yönetici Adı</label>
+                                <input type="text" name="name" value="{{ old('name', Auth::user()->name ?? 'Resepsiyon Yönetici') }}" 
+                                       class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40] transition-all">
+                            </div>
+
+                            <div class="h-[1px] bg-[#F1F5F9] my-4"></div>
+
+                            <div>
+                                <h4 class="font-lux-title text-sm font-bold text-[#0F172A] mb-1">Şifre Değiştirme (Opsiyonel)</h4>
+                                <p class="text-[11px] text-[#64748B] mb-3">Şifrenizi değiştirmek istemiyorsanız bu alanları boş bırakabilirsiniz.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-[#475569] mb-1.5">Mevcut Şifre</label>
+                                <input type="password" name="current_password" 
+                                       class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40] transition-all">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-[#475569] mb-1.5">Yeni Şifre</label>
+                                    <input type="password" name="password" 
+                                           class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40] transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-[#475569] mb-1.5">Yeni Şifre Tekrarı</label>
+                                    <input type="password" name="password_confirmation" 
+                                           class="w-full bg-[#F8F9FA] border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#0F172A] font-medium focus:outline-none focus:border-[#8F6E40] transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#8F6E40] hover:bg-[#725732] text-white font-lux-title text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2">
+                                <span>💾</span>
+                                <span>Değişiklikleri Kaydet</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </section>
         </main>
@@ -1034,6 +1247,8 @@
     </div>
 </div>
 
+<audio id="notification-sound-element" src="{{ asset('sounds/bell.wav') }}" preload="auto"></audio>
+
 <script>
     const portalSidebar = document.getElementById('portal-sidebar');
     const mobileBackdrop = document.getElementById('mobile-sidebar-backdrop');
@@ -1077,8 +1292,10 @@
             'products': 'Tüm Ürünler & Kategori Yönetimi',
             'guests': 'Misafirler ve Check-In Deski',
             'tables': 'Masa Haritası ve Özel QR Motoru',
+            'notifications': 'Garson & Sipariş Bildirimleri (Canlı Takip)',
             'orders': 'Canlı Sipariş Akışı (KDS)',
-            'bills': 'Kasa ve Kapanan Hesaplar'
+            'bills': 'Kasa ve Kapanan Hesaplar',
+            'settings': 'Yönetici Hesap ve Güvenlik Ayarları'
         };
         const titleEl = document.getElementById('portal-current-tab-title');
         if (titleEl && titleMap[tabName]) {
@@ -1216,12 +1433,252 @@
         document.getElementById('edit-guest-modal').classList.remove('hidden');
     }
 
+    let lastKnownNotificationId = {{ $waiterCalls->first() ? $waiterCalls->first()->id : 0 }};
+    let previousPendingCount = {{ $pendingWaiterCallsCount }};
+    let initialPollDone = false;
+    let portalAudioContext = null;
+
+    function unlockPortalAudio() {
+        try {
+            const audioEl = document.getElementById('notification-sound-element');
+            if (audioEl && !audioEl.dataset.unlocked) {
+                audioEl.volume = 1.0;
+                audioEl.play().then(() => {
+                    audioEl.pause();
+                    audioEl.currentTime = 0;
+                    audioEl.dataset.unlocked = '1';
+                }).catch(() => {});
+            }
+
+            if (!portalAudioContext) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) {
+                    portalAudioContext = new AudioCtx();
+                }
+            }
+            if (portalAudioContext && portalAudioContext.state === 'suspended') {
+                portalAudioContext.resume();
+            }
+
+            const statusEl = document.getElementById('audio-status-indicator');
+            if (statusEl) {
+                statusEl.innerHTML = '<span>🔊</span><span>Ses Açık</span>';
+                statusEl.className = 'px-2.5 py-1 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] text-[10px] text-[#16A34A] font-semibold flex items-center gap-1.5 shadow-sm cursor-pointer';
+            }
+        } catch(e) {}
+    }
+
+    document.addEventListener('click', unlockPortalAudio);
+    document.addEventListener('keydown', unlockPortalAudio);
+    document.addEventListener('touchstart', unlockPortalAudio);
+
+    function playNotificationSound() {
+        try {
+            const audioEl = document.getElementById('notification-sound-element');
+            if (audioEl) {
+                audioEl.currentTime = 0;
+                audioEl.volume = 1.0;
+                const p = audioEl.play();
+                if (p !== undefined) {
+                    p.catch(() => {});
+                }
+            }
+        } catch(e) {}
+
+        try {
+            unlockPortalAudio();
+            if (!portalAudioContext) return;
+
+            const ctx = portalAudioContext;
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+
+            const baseTime = ctx.currentTime;
+            const ringIntervals = [0, 0.8, 1.6, 2.4, 3.2];
+
+            ringIntervals.forEach(offset => {
+                const now = baseTime + offset;
+
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(880, now);
+                osc1.frequency.exponentialRampToValueAtTime(1174.66, now + 0.15);
+                gain1.gain.setValueAtTime(0.6, now);
+                gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                osc1.start(now);
+                osc1.stop(now + 0.6);
+
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(1479.98, now + 0.1);
+                gain2.gain.setValueAtTime(0.4, now + 0.1);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.start(now + 0.1);
+                osc2.stop(now + 0.75);
+            });
+        } catch(e) {}
+    }
+
+    async function pollLiveNotifications() {
+        try {
+            const res = await fetch('/reception/live-notifications?since_id=' + lastKnownNotificationId);
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.success) return;
+
+            const navBadge = document.getElementById('nav-waiter-badge');
+            const headerBadge = document.getElementById('header-waiter-badge');
+
+            if (navBadge) {
+                navBadge.textContent = data.pending_count;
+                if (data.pending_count > 0) {
+                    navBadge.classList.add('bg-red-500', 'text-white', 'animate-bounce');
+                    navBadge.classList.remove('bg-[#E2E8F0]', 'text-[#64748B]');
+                } else {
+                    navBadge.classList.remove('bg-red-500', 'text-white', 'animate-bounce');
+                    navBadge.classList.add('bg-[#E2E8F0]', 'text-[#64748B]');
+                }
+            }
+
+            if (headerBadge) {
+                headerBadge.textContent = data.pending_count;
+                if (data.pending_count > 0) {
+                    headerBadge.classList.remove('hidden');
+                } else {
+                    headerBadge.classList.add('hidden');
+                }
+            }
+
+            if (initialPollDone && (data.new_count > 0 || data.pending_count > previousPendingCount)) {
+                playNotificationSound();
+            }
+
+            previousPendingCount = data.pending_count;
+
+            if (data.latest_id > lastKnownNotificationId) {
+                lastKnownNotificationId = data.latest_id;
+            }
+
+            initialPollDone = true;
+
+            const container = document.getElementById('portal-notifications-container');
+            if (container && data.notifications && data.notifications.length > 0) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                container.innerHTML = data.notifications.map(call => {
+                    let typeBadge = '';
+                    if (call.type === 'order') {
+                        typeBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">🛒 SİPARİŞ</span>';
+                    } else if (call.type === 'bill') {
+                        typeBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">💳 HESAP İSTEĞİ</span>';
+                    } else if (call.type === 'ice') {
+                        typeBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]">🧊 BUZ & BARDAK</span>';
+                    } else if (call.type === 'ashtray') {
+                        typeBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#F8FAFC] text-[#475569] border border-[#E2E8F0]">🚬 KÜL TABLASI</span>';
+                    } else if (call.type === 'hookah') {
+                        typeBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#FAF5FF] text-[#7E22CE] border border-[#E9D5FF]">💨 KÖZ YENİLEME</span>';
+                    } else {
+                        typeBadge = '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]">🛎️ GARSON ÇAĞRISI</span>';
+                    }
+
+                    const isPending = (call.status === 'pending');
+                    const statusBadge = isPending 
+                        ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono bg-red-50 text-red-600 border border-red-200 animate-pulse">BEKLİYOR</span>'
+                        : '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold font-mono bg-emerald-50 text-emerald-600 border border-emerald-200">TAMAMLANDI</span>';
+
+                    let itemsHtml = '';
+                    if (call.order_items && call.order_items.length > 0) {
+                        itemsHtml = `
+                            <div class="border border-[#F1F5F9] rounded-xl p-2.5 bg-[#FAFBFD] space-y-1.5 mb-2">
+                                <span class="text-[10px] uppercase font-bold text-[#64748B] block mb-1">Sipariş İçeriği:</span>
+                                ${call.order_items.map(item => `
+                                    <div class="flex items-center justify-between text-xs py-0.5 border-b border-[#F1F5F9] last:border-0">
+                                        <div class="flex items-center gap-1.5 truncate">
+                                            <span class="font-bold text-[#8F6E40]">${item.quantity || 1}x</span>
+                                            <span class="text-[#1E293B] truncate">${item.name || ''}</span>
+                                        </div>
+                                        <span class="font-mono font-semibold text-[#0F172A] text-xs flex-shrink-0 ml-2">
+                                            ${(item.total || item.price || 0).toLocaleString('tr-TR')} ₺
+                                        </span>
+                                    </div>
+                                `).join('')}
+                                ${call.total_amount ? `
+                                    <div class="pt-1.5 mt-1 border-t border-[#E2E8F0] flex items-center justify-between font-bold text-xs">
+                                        <span class="text-[#0F172A]">Toplam Tutar:</span>
+                                        <span class="font-mono text-[#8F6E40]">${call.total_amount}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="waiter-call-card bg-[#FFFFFF] border ${isPending ? 'border-[#8F6E40]/60 ring-2 ring-[#8F6E40]/20' : 'border-[#E2E8F0]'} rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3"
+                             data-id="${call.id}"
+                             data-search="${(call.table_number + ' ' + (call.guest_name || '') + ' ' + call.title + ' ' + (call.message || '')).toLowerCase()}">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-1.5">
+                                        ${typeBadge}
+                                        <span class="font-mono text-xs font-bold text-[#0F172A]">${call.table_number}</span>
+                                    </div>
+                                    ${statusBadge}
+                                </div>
+
+                                <h4 class="font-lux-title text-sm font-bold text-[#0F172A]">${call.title}</h4>
+                                <div class="flex items-center gap-2 text-[11px] text-[#64748B] mb-2">
+                                    ${call.guest_name ? `<span class="font-medium text-[#334155]">👤 ${call.guest_name}</span>` : ''}
+                                    ${call.guest_code ? `<span class="font-mono font-bold text-[#8F6E40]">[${call.guest_code}]</span>` : ''}
+                                    <span>• ${call.time_ago || call.created_at_fmt}</span>
+                                </div>
+
+                                ${call.message ? `
+                                    <div class="p-2.5 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs text-[#334155] mb-2">
+                                        <span class="text-[10px] uppercase font-bold text-[#64748B] block mb-0.5">Misafir Notu:</span>
+                                        ${call.message}
+                                    </div>
+                                ` : ''}
+
+                                ${itemsHtml}
+                            </div>
+
+                            <div class="pt-2 border-t border-[#F1F5F9] flex items-center gap-2">
+                                <form action="/reception/waiter-calls/${call.id}/status" method="POST" class="flex-1">
+                                    <input type="hidden" name="_token" value="${csrfToken}">
+                                    <input type="hidden" name="status" value="${isPending ? 'completed' : 'pending'}">
+                                    <button type="submit" class="w-full py-1.5 px-2 rounded-lg ${isPending ? 'bg-[#DCFCE7] hover:bg-[#BBF7D0] border border-[#BBF7D0] text-[#16A34A]' : 'bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#CBD5E1] text-[#475569]'} text-xs font-bold transition-all">
+                                        ${isPending ? '✓ Tamamlandı' : '↺ Beklet'}
+                                    </button>
+                                </form>
+                                <form action="/reception/waiter-calls/${call.id}" method="POST" onsubmit="return confirm('Bildirimi silmek istediğinize emin misiniz?')">
+                                    <input type="hidden" name="_token" value="${csrfToken}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="p-1.5 rounded-lg bg-[#FEF2F2] hover:bg-[#FEE2E2] border border-[#FECACA] text-[#DC2626] text-xs font-bold transition-all" title="Sil">
+                                        ✕
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch(e) {}
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
         if (tab) {
             switchPortalTab(tab);
         }
+        pollLiveNotifications();
+        setInterval(pollLiveNotifications, 4000);
     });
 </script>
 @endsection

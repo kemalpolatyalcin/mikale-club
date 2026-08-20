@@ -8,6 +8,7 @@ use App\Models\ClubTable;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\WaiterCall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -222,6 +223,7 @@ class OrderController extends Controller
             'guest_note' => $request->input('note'),
         ]);
 
+        $orderSummaryItems = [];
         foreach ($items as $item) {
             $product = Product::find($item['product_id']);
             if ($product && $product->is_available) {
@@ -238,16 +240,100 @@ class OrderController extends Controller
                     'special_instructions' => $item['notes'] ?? null,
                     'status' => 'pending',
                 ]);
+
+                $orderSummaryItems[] = [
+                    'name' => $product->name,
+                    'quantity' => $qty,
+                    'price' => (float)$product->price,
+                    'total' => (float)$itemTotal,
+                    'notes' => $item['notes'] ?? '',
+                ];
             }
         }
 
         $order->update(['total_amount' => $totalAmount]);
+
+        WaiterCall::create([
+            'club_table_id' => $table->id,
+            'club_guest_id' => $guest->id,
+            'order_id' => $order->id,
+            'table_number' => $table->table_number,
+            'guest_name' => $guest->name,
+            'guest_code' => $guest->guest_code,
+            'type' => 'order',
+            'title' => "Yeni Sipariş: #{$orderNumber}",
+            'message' => $request->input('note') ?: 'Masa üzerinden yeni sipariş verildi.',
+            'order_items' => $orderSummaryItems,
+            'total_amount' => $totalAmount,
+            'status' => 'pending',
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Siparişiniz başarıyla alındı ve servis ekibine iletildi.',
             'order_number' => $orderNumber,
             'total' => number_format($totalAmount, 0, ',', '.') . ' ₺'
+        ]);
+    }
+
+    public function callWaiter(Request $request)
+    {
+        $guestId = session('guest_id');
+        if (!$guestId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Garson çağırabilmek için lütfen önce resepsiyondan aldığınız VIP Misafir Kodunuz ile masaya giriş yapınız.'
+            ], 401);
+        }
+
+        $guest = ClubGuest::where('id', $guestId)->where('status', 'active')->first();
+        if (!$guest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aktif misafir oturumunuz bulunamadı. Lütfen tekrar giriş yapınız.'
+            ], 401);
+        }
+
+        $table = $guest->table ?: (session('current_table_id') ? ClubTable::find(session('current_table_id')) : null);
+        if (!$table) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Masa bilginiz bulunamadı. Lütfen masadaki QR kodu okutunuz veya masaya bağlanınız.'
+            ], 400);
+        }
+
+        $validated = $request->validate([
+            'call_type' => 'required|string',
+            'note' => 'nullable|string',
+        ]);
+
+        $titles = [
+            'waiter' => 'Garson Masaya Çağrıldı',
+            'bill' => 'Hesap & Adisyon Talebi',
+            'ice' => 'Buz & Bardak Servisi',
+            'ashtray' => 'Kül Tablası Değişimi',
+            'hookah' => 'Nargile / Köz Yenileme',
+            'custom' => 'Misafir Özel Talebi',
+        ];
+
+        $title = $titles[$validated['call_type']] ?? 'Garson Çağrısı';
+
+        $call = WaiterCall::create([
+            'club_table_id' => $table->id,
+            'club_guest_id' => $guest->id,
+            'table_number' => $table->table_number,
+            'guest_name' => $guest->name,
+            'guest_code' => $guest->guest_code,
+            'type' => $validated['call_type'],
+            'title' => $title,
+            'message' => $validated['note'] ?: null,
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Garson çağrınız {$table->table_number} masası için iletildi. Servis ekibimiz masanıza yönlendiriliyor.",
+            'call_id' => $call->id,
         ]);
     }
 

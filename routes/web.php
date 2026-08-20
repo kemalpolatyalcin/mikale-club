@@ -48,3 +48,10 @@ Route::get('/reception/tables/print-all-qr', [ReceptionController::class, 'print
 
 Route::post('/reception/orders/{order}/status', [ReceptionController::class, 'updateOrderStatus'])->name('reception.order.status');
 Route::delete('/reception/orders/{order}', [ReceptionController::class, 'deleteOrder'])->name('reception.order.delete');
+
+Route::post('/waiter/call', [OrderController::class, 'callWaiter'])->name('waiter.call');
+Route::get('/reception/live-notifications', [ReceptionController::class, 'getLiveNotifications'])->name('reception.notifications.live');
+Route::post('/reception/waiter-calls/{call}/status', [ReceptionController::class, 'updateWaiterCallStatus'])->name('reception.waiter_call.status');
+Route::delete('/reception/waiter-calls/{call}', [ReceptionController::class, 'deleteWaiterCall'])->name('reception.waiter_call.delete');
+Route::post('/reception/waiter-calls/clear-all', [ReceptionController::class, 'clearAllWaiterCalls'])->name('reception.waiter_call.clear_all');
+Route::post('/reception/settings/update', [ReceptionController::class, 'updateSettings'])->name('reception.settings.update');

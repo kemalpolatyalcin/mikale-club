@@ -8,8 +8,10 @@ use App\Models\ClubGuest;
 use App\Models\ClubTable;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\WaiterCall;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class ReceptionController extends Controller
@@ -124,6 +126,12 @@ class ReceptionController extends Controller
         $activeTablesCount = ClubTable::whereHas('activeGuests')->count();
         $todayGuestsCount = ClubGuest::whereDate('check_in_at', now()->today())->count();
 
+        $waiterCalls = WaiterCall::with(['table', 'guest', 'order.items.product'])
+            ->latest()
+            ->take(50)
+            ->get();
+        $pendingWaiterCallsCount = WaiterCall::where('status', 'pending')->count();
+
         return view('reception.index', compact(
             'activeGuests',
             'allGuests',
@@ -140,6 +148,8 @@ class ReceptionController extends Controller
             'totalCategoriesCount',
             'activeTablesCount',
             'todayGuestsCount',
+            'waiterCalls',
+            'pendingWaiterCallsCount',
             'search',
             'tab'
         ));
@@ -552,5 +562,113 @@ class ReceptionController extends Controller
         if (!Auth::check()) return redirect()->route('reception.login');
         $order->delete();
         return redirect()->route('reception.index', ['tab' => 'orders'])->with('success', "Sipariş silindi.");
+    }
+
+    public function getLiveNotifications(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false], 401);
+        }
+
+        $sinceId = (int)$request->query('since_id', 0);
+
+        $calls = WaiterCall::with(['table', 'guest', 'order.items.product'])
+            ->latest()
+            ->take(40)
+            ->get()
+            ->map(function ($call) {
+                return [
+                    'id' => $call->id,
+                    'type' => $call->type,
+                    'title' => $call->title,
+                    'message' => $call->message,
+                    'table_number' => $call->table_number,
+                    'guest_name' => $call->guest_name,
+                    'guest_code' => $call->guest_code,
+                    'total_amount' => $call->total_amount ? number_format($call->total_amount, 0, ',', '.') . ' ₺' : null,
+                    'order_items' => $call->order_items,
+                    'status' => $call->status,
+                    'time_ago' => $call->created_at ? $call->created_at->diffForHumans() : '',
+                    'created_at_fmt' => $call->created_at ? $call->created_at->format('H:i:s') : '',
+                ];
+            });
+
+        $pendingCount = WaiterCall::where('status', 'pending')->count();
+        $newCallsCount = $sinceId > 0 ? WaiterCall::where('id', '>', $sinceId)->where('status', 'pending')->count() : 0;
+
+        return response()->json([
+            'success' => true,
+            'pending_count' => $pendingCount,
+            'new_count' => $newCallsCount,
+            'latest_id' => $calls->first() ? $calls->first()['id'] : 0,
+            'notifications' => $calls,
+        ]);
+    }
+
+    public function updateWaiterCallStatus(Request $request, WaiterCall $call)
+    {
+        if (!Auth::check()) return response()->json(['success' => false], 401);
+
+        $status = $request->input('status', 'completed');
+        $call->update([
+            'status' => $status,
+            'responded_at' => now(),
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'status' => $status]);
+        }
+
+        return back()->with('success', 'Bildirim durumu güncellendi.');
+    }
+
+    public function deleteWaiterCall(WaiterCall $call)
+    {
+        if (!Auth::check()) return response()->json(['success' => false], 401);
+
+        $call->delete();
+
+        return back()->with('success', 'Bildirim silindi.');
+    }
+
+    public function clearAllWaiterCalls()
+    {
+        if (!Auth::check()) return response()->json(['success' => false], 401);
+
+        WaiterCall::where('status', 'pending')->update([
+            'status' => 'completed',
+            'responded_at' => now(),
+        ]);
+
+        return back()->with('success', 'Tüm bekleyen bildirimler tamamlandı olarak işaretlendi.');
+    }
+
+    public function updateSettings(Request $request)
+    {
+        if (!Auth::check()) return redirect()->route('reception.login');
+
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'name' => 'nullable|string|max:255',
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|string|min:4|confirmed',
+        ]);
+
+        if (!empty($validated['password'])) {
+            if (!empty($validated['current_password']) && !Hash::check($validated['current_password'], $user->password)) {
+                return redirect()->route('reception.index', ['tab' => 'settings'])->with('error', 'Mevcut şifreniz hatalı.');
+            }
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->email = $validated['email'];
+        if (!empty($validated['name'])) {
+            $user->name = $validated['name'];
+        }
+        $user->save();
+
+        return redirect()->route('reception.index', ['tab' => 'settings'])->with('success', 'Hesap ve giriş bilgileri başarıyla güncellendi.');
     }
 }

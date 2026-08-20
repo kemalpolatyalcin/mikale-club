@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const openJoinModalBtns = document.querySelectorAll('.open-join-table-btn, .open-companion-modal-btn');
     const closeJoinModalBtn = document.getElementById('close-join-modal-btn');
     const joinModalBackdrop = document.getElementById('join-modal-backdrop');
+    const waiterModal = document.getElementById('waiter-call-modal');
+    const openWaiterModalBtns = document.querySelectorAll('.open-waiter-modal-btn-trigger, .open-waiter-modal-btn');
+    const closeWaiterModalBtn = document.getElementById('close-waiter-modal-btn');
+    const waiterModalBackdrop = document.getElementById('waiter-modal-backdrop');
+    const submitWaiterCallBtn = document.getElementById('submit-waiter-call-btn');
+    const waiterTypePills = document.querySelectorAll('.waiter-type-pill');
+    let selectedWaiterCallType = 'waiter';
     const searchInput = document.getElementById('menu-search');
     const toolbarSearchBtn = document.getElementById('toolbar-tab-search');
     const toolbarMenuBtn = document.getElementById('toolbar-tab-menu');
@@ -102,6 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (joinTableModal && !joinTableModal.classList.contains('hidden')) {
             joinTableModal.classList.add('hidden');
         }
+        if (waiterModal && !waiterModal.classList.contains('hidden')) {
+            waiterModal.classList.add('hidden');
+        }
         document.body.style.overflow = '';
     };
 
@@ -143,6 +153,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (joinTableModal) {
             joinTableModal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+        }
+    };
+
+    const openWaiterModal = () => {
+        closeAllModals();
+        setActiveToolbarTab('toolbar-tab-waiter');
+        if (waiterModal) {
+            waiterModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    const closeWaiterModal = () => {
+        if (waiterModal) waiterModal.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (window.location.pathname.includes('/reception') || window.location.pathname.includes('/portal')) {
+            setActiveToolbarTab('toolbar-tab-reception');
+        } else {
+            setActiveToolbarTab('toolbar-tab-menu');
         }
     };
 
@@ -564,6 +593,85 @@ document.addEventListener('DOMContentLoaded', () => {
             setActiveToolbarTab('toolbar-tab-menu');
         }
     });
+
+    openWaiterModalBtns.forEach(btn => btn.addEventListener('click', openWaiterModal));
+    if (closeWaiterModalBtn) closeWaiterModalBtn.addEventListener('click', closeWaiterModal);
+    if (waiterModalBackdrop) waiterModalBackdrop.addEventListener('click', closeWaiterModal);
+
+    waiterTypePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            waiterTypePills.forEach(p => {
+                p.classList.remove('active', 'bg-[#C5A880]', 'text-[#0D0C0A]', 'border-[#C5A880]', 'font-semibold');
+                p.classList.add('bg-[#1B1814]', 'text-[#A89C8F]', 'border-[#C5A880]/20');
+            });
+            pill.classList.add('active', 'bg-[#C5A880]', 'text-[#0D0C0A]', 'border-[#C5A880]', 'font-semibold');
+            pill.classList.remove('bg-[#1B1814]', 'text-[#A89C8F]', 'border-[#C5A880]/20');
+            selectedWaiterCallType = pill.getAttribute('data-call-type') || 'waiter';
+        });
+    });
+
+    const waiterNeedLoginBtn = document.getElementById('waiter-need-login-btn');
+    if (waiterNeedLoginBtn) {
+        waiterNeedLoginBtn.addEventListener('click', () => {
+            closeWaiterModal();
+            openJoinModal();
+        });
+    }
+
+    if (submitWaiterCallBtn) {
+        submitWaiterCallBtn.addEventListener('click', async () => {
+            const noteInput = document.getElementById('waiter-call-note');
+            const note = noteInput ? noteInput.value.trim() : '';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            submitWaiterCallBtn.disabled = true;
+            submitWaiterCallBtn.innerHTML = '<span>Çağrı İletiliyor...</span>';
+
+            try {
+                const res = await fetch('/waiter/call', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || ''
+                    },
+                    body: JSON.stringify({
+                        call_type: selectedWaiterCallType,
+                        note: note
+                    })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeWaiterModal();
+                    if (noteInput) noteInput.value = '';
+                    const toast = document.getElementById('order-toast');
+                    if (toast) {
+                        document.getElementById('toast-msg').textContent = data.message;
+                        toast.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
+                        toast.classList.add('translate-y-0', 'opacity-100');
+                        setTimeout(() => {
+                            toast.classList.add('translate-y-32', 'opacity-0', 'pointer-events-none');
+                            toast.classList.remove('translate-y-0', 'opacity-100');
+                        }, 3500);
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    if (res.status === 401) {
+                        closeWaiterModal();
+                        openJoinModal();
+                    }
+                    alert(data.message || 'Çağrı iletilemedi.');
+                }
+            } catch(e) {
+                alert('Bağlantı hatası oluştu.');
+            } finally {
+                submitWaiterCallBtn.disabled = false;
+                submitWaiterCallBtn.innerHTML = '<span>🛎️</span><span>Çağrıyı Personele İlet</span>';
+            }
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {

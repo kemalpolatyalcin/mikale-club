@@ -259,6 +259,33 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS `waiter_calls`;
+CREATE TABLE `waiter_calls` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `club_table_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `club_guest_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `order_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `table_number` varchar(50) NOT NULL,
+  `guest_name` varchar(255) DEFAULT NULL,
+  `guest_code` varchar(50) DEFAULT NULL,
+  `type` varchar(50) NOT NULL DEFAULT 'waiter',
+  `title` varchar(255) NOT NULL,
+  `message` text DEFAULT NULL,
+  `order_items` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`order_items`)),
+  `total_amount` decimal(10,2) DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'pending',
+  `responded_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `waiter_calls_club_table_id_foreign` (`club_table_id`),
+  KEY `waiter_calls_club_guest_id_foreign` (`club_guest_id`),
+  KEY `waiter_calls_order_id_foreign` (`order_id`),
+  CONSTRAINT `waiter_calls_club_table_id_foreign` FOREIGN KEY (`club_table_id`) REFERENCES `club_tables` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `waiter_calls_club_guest_id_foreign` FOREIGN KEY (`club_guest_id`) REFERENCES `club_guests` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `waiter_calls_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -278,5 +305,6 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (8, '2026_08_14_000
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (9, '2026_08_14_000006_create_order_items_table', 2);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (10, '2026_08_14_000007_create_bills_table', 2);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (11, '2026_08_19_000001_add_token_expires_at_to_club_tables_table', 3);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (12, '2026_08_20_000001_create_waiter_calls_table', 4);
 
 SET FOREIGN_KEY_CHECKS = 1;
